@@ -1,34 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common'
 
 export interface Product {
-  id: number;
-  name: string;
+  id: number
+  name: string
 }
 
 @Injectable()
 export class ProductsService {
-  private products: Product[] = [];
+  private products: Product[] = []
 
   findAll(): Product[] {
-    return this.products;
+    return this.products
   }
 
   findOne(id: number): Product | undefined {
-    return this.products.find((product) => product.id === id);
+    return this.products.find((product) => product.id === id)
   }
 
   create(product: Omit<Product, 'id'>) {
-    this.products.push({ id: Date.now(), ...product });
+    this.products.push({ id: Date.now(), ...product })
   }
 
   update(id: number, updatedProduct: Omit<Product, 'id'>) {
-    const index = this.products.findIndex((p) => p.id === id);
+    const index = this.products.findIndex((p) => p.id === id)
     if (index !== -1) {
-      this.products[index] = { id, ...updatedProduct };
+      this.products[index] = { id, ...updatedProduct }
     }
   }
 
   remove(id: number) {
-    this.products = this.products.filter((p) => p.id !== id);
+    this.products = this.products.filter((p) => p.id !== id)
   }
 }
