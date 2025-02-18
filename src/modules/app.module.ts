@@ -3,8 +3,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { MongooseModule } from '@nestjs/mongoose'
 import { AppController } from '../controllers/app.controller'
 import { AppService } from '../services/app.service'
-import { ProductsModule } from './products.module'
+import { ProductsModule } from './product.module'
 import { AuthModule } from './auth.module'
+import { UserController } from '../controllers/user.controller'
+import { UserService } from '../services/user.service'
+import { User } from '~/models/user.model'
+import { UserModule } from './user.module'
 
 @Module({
   imports: [
@@ -13,6 +17,7 @@ import { AuthModule } from './auth.module'
     }),
     ProductsModule,
     AuthModule,
+    UserModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
@@ -25,6 +30,7 @@ import { AuthModule } from './auth.module'
     })
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [AppService],
+  exports: [AppService]
 })
 export class AppModule {}

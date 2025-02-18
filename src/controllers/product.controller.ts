@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common'
-import { ProductsService } from '../services/products.service'
+import { ProductsService } from '../services/product.service'
 import { UpdateQuery } from 'mongoose'
 import { Product } from '~/models/product.model'
 
