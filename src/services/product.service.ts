@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, UpdateQuery } from 'mongoose'
-import { Product, ProductDocument } from '../models/products.model'
+import { Product, ProductDocument } from '../models/product.model'
 
 interface ProductDTO {
   name: string
