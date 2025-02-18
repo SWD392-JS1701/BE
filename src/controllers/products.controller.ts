@@ -1,32 +1,34 @@
 import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common'
-import { ProductsService, Product } from '../services/products.service' // Import Product
+import { ProductsService } from '../services/products.service'
+import { UpdateQuery } from 'mongoose'
+import { Product } from '~/models/products.model'
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  findAll(): Product[] {
+  async findAll() {
     return this.productsService.findAll()
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Product | undefined {
+  async findOne(@Param('id') id: string) {
     return this.productsService.findOne(id)
   }
 
   @Post()
-  create(@Body() product: Omit<Product, 'id'>): void {
-    this.productsService.create(product)
+  async create(@Body() createProductDto: any) {
+    return this.productsService.create(createProductDto)
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() product: Omit<Product, 'id'>): void {
-    this.productsService.update(id, product)
+  async update(@Param('id') id: string, @Body() updateProductDto: UpdateQuery<Product>) {
+    return this.productsService.update(id, updateProductDto)
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number): void {
-    this.productsService.remove(id)
+  async remove(@Param('id') id: string) {
+    return this.productsService.remove(id)
   }
 }

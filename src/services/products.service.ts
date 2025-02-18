@@ -1,34 +1,30 @@
 import { Injectable } from '@nestjs/common'
-
-export interface Product {
-  id: number
-  name: string
-}
+import { InjectModel } from '@nestjs/mongoose'
+import { Model, UpdateQuery } from 'mongoose'
+import { Product, ProductDocument } from '../models/products.model'
 
 @Injectable()
 export class ProductsService {
-  private products: Product[] = []
+  constructor(@InjectModel(Product.name) private productModel: Model<ProductDocument>) {}
 
-  findAll(): Product[] {
-    return this.products
+  async findAll(): Promise<Product[]> {
+    return this.productModel.find().exec()
   }
 
-  findOne(id: number): Product | undefined {
-    return this.products.find((product) => product.id === id)
+  async findOne(id: string): Promise<Product | null> {
+    return this.productModel.findById(id).exec()
   }
 
-  create(product: Omit<Product, 'id'>) {
-    this.products.push({ id: Date.now(), ...product })
+  async create(createProductDto: any): Promise<Product> {
+    const createdProduct = new this.productModel(createProductDto)
+    return createdProduct.save()
   }
 
-  update(id: number, updatedProduct: Omit<Product, 'id'>) {
-    const index = this.products.findIndex((p) => p.id === id)
-    if (index !== -1) {
-      this.products[index] = { id, ...updatedProduct }
-    }
+  async update(id: string, updateProductDto: UpdateQuery<Product>): Promise<Product | null> {
+    return this.productModel.findByIdAndUpdate(id, updateProductDto, { new: true }).exec()
   }
 
-  remove(id: number) {
-    this.products = this.products.filter((p) => p.id !== id)
+  async remove(id: string): Promise<Product | null> {
+    return this.productModel.findByIdAndDelete(id).exec()
   }
 }
