@@ -15,9 +15,12 @@ import { AuthModule } from './auth.module'
     AuthModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('DATABASE_URL')
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const dbUrl = await new Promise((resolve) => {
+          setTimeout(() => resolve(configService.get<string>('DATABASE_URL')), 100)
+        })
+        return { uri: dbUrl as string }
+      },
       inject: [ConfigService]
     })
   ],
