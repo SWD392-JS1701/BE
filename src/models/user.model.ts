@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Mongoose, Types } from 'mongoose';
-import { ObjectId } from 'mongodb';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -41,6 +40,9 @@ export class User {
 
   @Prop()
   address?: string;
+
+  @Prop({ default: 1 })
+  status!: number;
 
   createdAt!: Date;
   updatedAt!: Date;

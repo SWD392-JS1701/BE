@@ -16,7 +16,7 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     const newUser = new this.userModel({
       ...createUserDto,
-      password_hash: hashedPassword,
+      passsword: hashedPassword,
     });
     return newUser.save();
   }
@@ -34,6 +34,20 @@ export class UserService {
     return user;
   }
 
+  /* Get a user by username */
+  async getUserByUsername(username: string): Promise<User> {
+    const user = await this.userModel.findOne({username}).exec();
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
+  /* Get a user by email */
+  async getUserByEmail(email: string): Promise<User> {
+    const user = await this.userModel.findOne({ username: email }).exec();
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
   /* Update user */
   async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const updatedUser = await this.userModel
@@ -45,7 +59,10 @@ export class UserService {
 
   /* Delete user */
   async deleteUser(id: string): Promise<void> {
-    const result = await this.userModel.findByIdAndDelete(id).exec();
-    if (!result) throw new NotFoundException('User not found');
+    const objectId = new Types.ObjectId(id);
+    const user = await this.userModel.findById(objectId).exec();
+    if (!user) throw new NotFoundException('User not found');
+    user.status = 0;
+    await user.save();
   }
 }
