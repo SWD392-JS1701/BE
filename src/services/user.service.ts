@@ -16,7 +16,7 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     const newUser = new this.userModel({
       ...createUserDto,
-      password_hash: hashedPassword,
+      passsword: hashedPassword,
     });
     return newUser.save();
   }
@@ -45,7 +45,10 @@ export class UserService {
 
   /* Delete user */
   async deleteUser(id: string): Promise<void> {
-    const result = await this.userModel.findByIdAndDelete(id).exec();
-    if (!result) throw new NotFoundException('User not found');
+    const objectId = new Types.ObjectId(id);
+    const user = await this.userModel.findById(objectId).exec();
+    if (!user) throw new NotFoundException('User not found');
+    user.status = 0;
+    await user.save();
   }
 }

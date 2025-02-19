@@ -40,6 +40,10 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   address?: string;
+
+  @IsOptional()
+  @IsString()
+  status?: number;
 }
 
 export class UpdateUserDto {
@@ -85,6 +89,10 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   address?: string;
+
+  @IsOptional()
+  @IsString()
+  status?: number;
 }
 
 export class LoginDto {
