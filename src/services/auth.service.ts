@@ -14,13 +14,18 @@ export class AuthService {
   ) {}
 
   async login(email: string, password: string): Promise<{ access_token: string }> {
-    // Find user by username in MongoDB
-    const user = await this.userModel.findOne({ email }).exec();
+    let user = await this.userModel.findOne({ email }).exec();
+
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+        user = await this.userModel.findOne({ username: email }).exec();
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+    if (!user) {
+        throw new UnauthorizedException('Invalid email or username');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.passsword);
+    //const isPasswordValid = password === user.passsword;
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -35,7 +40,7 @@ export class AuthService {
     const { username, email, password, ...otherFields } = createUserDto;
 
     const existingUser = await this.userModel.findOne({
-      $or: [{ username }, { email }],
+       $or: [{ username }, { email }],
     }).exec();
 
     if (existingUser) {
@@ -44,12 +49,12 @@ export class AuthService {
 
     // Hash the password
     const salt = await bcrypt.genSalt();
-    const password_hash = await bcrypt.hash(password, salt);
+    const passsword = await bcrypt.hash(password, salt);
 
     const createdUser = new this.userModel({
       username,
       email,
-      password_hash,
+      passsword,
       ...otherFields,
     });
 
