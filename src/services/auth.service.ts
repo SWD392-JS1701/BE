@@ -60,7 +60,7 @@ export class AuthService {
 
     await createdUser.save();
 
-     const payload = { username: createdUser.username, id: createdUser._id };
+     const payload = { id: createdUser._id, username: createdUser.username, role: createdUser.role };
      const access_token = this.jwtService.sign(payload);
      return { message: 'Registration successful', access_token };
   }
