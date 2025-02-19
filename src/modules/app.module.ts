@@ -5,9 +5,6 @@ import { AppController } from '../controllers/app.controller'
 import { AppService } from '../services/app.service'
 import { ProductsModule } from './product.module'
 import { AuthModule } from './auth.module'
-import { UserController } from '../controllers/user.controller'
-import { UserService } from '../services/user.service'
-import { User } from '~/models/user.model'
 import { UserModule } from './user.module'
 
 @Module({

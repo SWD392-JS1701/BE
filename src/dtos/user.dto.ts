@@ -1,88 +1,88 @@
-import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator'
 
 export class CreateUserDto {
   @IsString()
-  username!: string;
+  username!: string
 
   @IsString()
   @MinLength(6)
-  password!: string;
+  password!: string
 
   @IsEmail()
-  email!: string;
+  email!: string
 
   @IsOptional()
   @IsString()
-  role?: string;
+  role?: string
 
   @IsOptional()
   @IsString()
-  skin_type?: string;
+  skin_type?: string
 
   @IsOptional()
-  membership_id?: number;
+  membership_id?: number
 
   @IsOptional()
-  point?: number;
-
-  @IsOptional()
-  @IsString()
-  first_name?: string;
+  point?: number
 
   @IsOptional()
   @IsString()
-  last_name?: string;
+  first_name?: string
 
   @IsOptional()
   @IsString()
-  phone_number?: string;
+  last_name?: string
 
   @IsOptional()
   @IsString()
-  address?: string;
+  phone_number?: string
+
+  @IsOptional()
+  @IsString()
+  address?: string
 }
 
 export class UpdateUserDto {
   @IsOptional()
   @IsString()
-  username?: string;
+  username?: string
 
   @IsOptional()
   @IsString()
   @MinLength(6)
-  password?: string;
+  password?: string
 
   @IsOptional()
   @IsEmail()
-  email?: string;
+  email?: string
 
   @IsOptional()
   @IsString()
-  role?: string;
+  role?: string
 
   @IsOptional()
   @IsString()
-  skin_type?: string;
+  skin_type?: string
 
   @IsOptional()
-  membership_id?: number;
+  membership_id?: number
 
   @IsOptional()
-  point?: number;
-
-  @IsOptional()
-  @IsString()
-  first_name?: string;
+  point?: number
 
   @IsOptional()
   @IsString()
-  last_name?: string;
+  first_name?: string
 
   @IsOptional()
   @IsString()
-  phone_number?: string;
+  last_name?: string
 
   @IsOptional()
   @IsString()
-  address?: string;
+  phone_number?: string
+
+  @IsOptional()
+  @IsString()
+  address?: string
 }
