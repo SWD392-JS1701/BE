@@ -34,6 +34,20 @@ export class UserService {
     return user;
   }
 
+  /* Get a user by username */
+  async getUserByUsername(username: string): Promise<User> {
+    const user = await this.userModel.findOne({username}).exec();
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
+  /* Get a user by email */
+  async getUserByEmail(email: string): Promise<User> {
+    const user = await this.userModel.findOne({ username: email }).exec();
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
   /* Update user */
   async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const updatedUser = await this.userModel
