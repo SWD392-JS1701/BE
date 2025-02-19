@@ -41,7 +41,7 @@ export class User {
   @Prop()
   address?: string;
 
-  @Prop({ default: 0 })
+  @Prop({ default: 1 })
   status!: number;
 
   createdAt!: Date;
