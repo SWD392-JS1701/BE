@@ -86,3 +86,13 @@ export class UpdateUserDto {
   @IsString()
   address?: string;
 }
+
+export class LoginDto {
+  @IsOptional()
+  @IsEmail()
+  email!: string;
+
+  @IsOptional()
+  @IsString()
+  password!: string;
+}
