@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common'
 import { ProductsService } from '../services/product.service'
 import { UpdateQuery } from 'mongoose'
 import { Product } from '~/models/product.model'
+import { ProductDTO } from '~/dtos/product.dto'
 
 @Controller('products')
 export class ProductsController {
@@ -18,7 +19,7 @@ export class ProductsController {
   }
 
   @Post()
-  async create(@Body() createProductDto: any) {
+  async create(@Body() createProductDto: ProductDTO) {
     return this.productsService.create(createProductDto)
   }
 
