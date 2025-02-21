@@ -95,6 +95,12 @@ export class UpdateUserDto {
   status?: number
 }
 
+export class DeleteUserDto {
+  @IsOptional()
+  @IsString()
+  status?: 0
+}
+
 export class LoginDto {
   @IsOptional()
   @IsEmail()
