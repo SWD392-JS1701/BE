@@ -1,66 +1,58 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model, Types } from 'mongoose'
-import { User, UserDocument } from '../models/user.model'
-import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto'
-import * as bcrypt from 'bcrypt'
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { UserRepository } from '../repositories/user.repository';
+import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
+import { User } from '../models/user.model';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(private readonly userRepository: UserRepository) {}
 
   /* Create a new user */
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10)
-    const newUser = new this.userModel({
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const newUser = await this.userRepository.create({
       ...createUserDto,
-      passsword: hashedPassword
-    })
-    return newUser.save()
+      passsword: hashedPassword,
+    });
+    return newUser;
   }
 
   /* Get all users */
   async getAllUsers(): Promise<User[]> {
-    return this.userModel.find().exec()
+    return this.userRepository.findAll();
   }
 
   /* Get a user by ID */
   async getUserById(id: string): Promise<User> {
-    const objectId = new Types.ObjectId(id)
-    const user = await this.userModel.findById(objectId).exec()
-    if (!user) throw new NotFoundException('User not found')
-    return user
+    const user = await this.userRepository.findById(id);
+    if (!user) throw new NotFoundException('User not found');
+    return user;
   }
 
   /* Get a user by username */
   async getUserByUsername(username: string): Promise<User> {
-    const user = await this.userModel.findOne({ username }).exec()
-    if (!user) throw new NotFoundException('User not found')
-    return user
+    const user = await this.userRepository.findByUsername(username);
+    if (!user) throw new NotFoundException('User not found');
+    return user;
   }
 
   /* Get a user by email */
   async getUserByEmail(email: string): Promise<User> {
-    const user = await this.userModel.findOne({ username: email }).exec()
-    if (!user) throw new NotFoundException('User not found')
-    return user
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) throw new NotFoundException('User not found');
+    return user;
   }
 
   /* Update user */
   async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const updatedUser = await this.userModel
-      .findByIdAndUpdate(id, { $set: updateUserDto, updatedAt: new Date() }, { new: true })
-      .exec()
-    if (!updatedUser) throw new NotFoundException('User not found')
-    return updatedUser
+    const updatedUser = await this.userRepository.update(id, updateUserDto);
+    if (!updatedUser) throw new NotFoundException('User not found');
+    return updatedUser;
   }
 
   /* Delete user */
   async deleteUser(id: string): Promise<void> {
-    const objectId = new Types.ObjectId(id)
-    const user = await this.userModel.findById(objectId).exec()
-    if (!user) throw new NotFoundException('User not found')
-    user.status = 0
-    await user.save()
+    await this.userRepository.delete(id);
   }
 }
