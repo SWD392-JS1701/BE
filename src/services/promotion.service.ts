@@ -1,9 +1,8 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { Promotion, PromotionDocument } from '../models/promotion.model'
-import { CreatePromotionDto } from '~/dtos/createPromotion.dto'
-import { UpdatePromotionDto } from '~/dtos/updatePromotion.dto'
+import { CreatePromotionDto, UpdatePromotionDto } from '~/dtos/promotion.dto'
 
 @Injectable()
 export class PromotionService {
@@ -22,11 +21,19 @@ export class PromotionService {
     return this.promotionModel.findById(id).exec()
   }
 
-  async update(id: string, updatePromotionDto: UpdatePromotionDto): Promise<Promotion | null> {
-    return this.promotionModel.findByIdAndUpdate(id, updatePromotionDto, { new: true }).exec()
+  async update(id: string, updatePromotionDto: UpdatePromotionDto): Promise<Promotion> {
+    const updatedPromotion = await this.promotionModel.findByIdAndUpdate(id, updatePromotionDto, { new: true }).exec()
+    if (!updatedPromotion) {
+      throw new NotFoundException(`Promotion with id ${id} not found`)
+    }
+    return updatedPromotion
   }
 
-  async remove(id: string): Promise<Promotion | null> {
-    return this.promotionModel.findByIdAndDelete(id).exec()
+  async remove(id: string): Promise<Promotion> {
+    const removedPromotion = await this.promotionModel.findByIdAndDelete(id).exec()
+    if (!removedPromotion) {
+      throw new NotFoundException(`Promotion with id ${id} not found`)
+    }
+    return removedPromotion
   }
 }
