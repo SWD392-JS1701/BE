@@ -5,19 +5,18 @@ import { AppController } from '../controllers/app.controller'
 import { AppService } from '../services/app.service'
 import { ProductsModule } from './product.module'
 import { AuthModule } from './auth.module'
-import { UserController } from '../controllers/user.controller'
-import { UserService } from '../services/user.service'
-import { User } from '~/models/user.model'
 import { UserModule } from './user.module'
+import { PromotionModule } from './promotion.module'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true
     }),
-    ProductsModule,
     AuthModule,
     UserModule,
+    ProductsModule,
+    PromotionModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
