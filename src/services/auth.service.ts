@@ -1,10 +1,10 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common'
+import { BadGatewayException, BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import { User, UserDocument } from '../models/user.model'
-import { CreateUserDto } from '../dtos/user.dto'
+import { CreateUserDto, LoginDto } from '../dtos/user.dto'
 
 @Injectable()
 export class AuthService {
@@ -13,14 +13,19 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
 
-  async login(email: string, password: string): Promise<{ access_token: string }> {
-    // Find user by username in MongoDB
-    const user = await this.userModel.findOne({ email }).exec()
+  async login(loginDto: LoginDto): Promise<{ access_token: string }> {
+    const { email, password } = loginDto
+    let user = await this.userModel.findOne({ email }).exec()
+
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials')
+      user = await this.userModel.findOne({ username: email }).exec()
     }
 
-    const isPasswordValid: boolean = (await bcrypt.compare(password, user.password_hash)) as boolean
+    if (!user) {
+      throw new UnauthorizedException('Invalid email or username')
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.passsword)
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials')
     }
@@ -46,18 +51,18 @@ export class AuthService {
 
     // Hash the password
     const salt = await bcrypt.genSalt()
-    const password_hash = await bcrypt.hash(password, salt)
+    const passsword = await bcrypt.hash(password, salt)
 
     const createdUser = new this.userModel({
       username,
       email,
-      password_hash,
+      passsword,
       ...otherFields
     })
 
     await createdUser.save()
 
-    const payload = { username: createdUser.username, id: createdUser._id }
+    const payload = { id: createdUser._id, username: createdUser.username, role: createdUser.role }
     const access_token = this.jwtService.sign(payload)
     return { message: 'Registration successful', access_token }
   }

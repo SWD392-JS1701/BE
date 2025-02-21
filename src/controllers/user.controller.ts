@@ -24,6 +24,18 @@ export class UserController {
     return this.userService.getUserById(id)
   }
 
+  /** Get user by username */
+  @Get(':username')
+  async getUserByUsername(@Param('username') username: string) {
+    return this.userService.getUserByUsername(username);
+  }
+
+  /** Get user by email */
+  @Get(':email')
+  async getUserByEmail(@Param('email') email: string) {
+    return this.userService.getUserByEmail(email);
+  }
+
   /** Update user */
   @Patch(':id')
   async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
