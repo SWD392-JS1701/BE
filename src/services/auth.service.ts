@@ -66,4 +66,5 @@ export class AuthService {
     const access_token = this.jwtService.sign(payload)
     return { message: 'Registration successful', access_token }
   }
+  
 }

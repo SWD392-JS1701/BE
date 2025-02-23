@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { AuthService } from '../services/auth.service'
 import { User, UserSchema } from '../models/user.model'
 import { AuthController } from '~/controllers/auth.controller'
+import { UserModule } from '../modules/user.module';
 import * as dotenv from 'dotenv'
 
 dotenv.config()
@@ -16,7 +17,8 @@ dotenv.config()
         secret: process.env.JWT_SECRET,
         signOptions: { expiresIn: '1h' }
       })
-    })
+    }),
+    UserModule 
   ],
   controllers: [AuthController],
   providers: [AuthService],
