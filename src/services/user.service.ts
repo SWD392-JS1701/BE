@@ -48,10 +48,28 @@ export class UserService {
 
   /* Update user */
   async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const currentUser = await this.userRepository.findById(id);
+    if (!currentUser) {
+      throw new NotFoundException('User not found');
+    }
+  
+    if (updateUserDto.plainPassword) {
+      const isPasswordTheSame = await bcrypt.compare(updateUserDto.plainPassword, currentUser.password);
+      if (!isPasswordTheSame) {
+        updateUserDto.plainPassword = await bcrypt.hash(updateUserDto.plainPassword, 10);
+      }
+    }
+  
     const updatedUser = await this.userRepository.update(id, updateUserDto);
-    if (!updatedUser) throw new NotFoundException('User not found');
-    return updatedUser;
+  
+    if (!updatedUser) {
+      throw new NotFoundException('User not found'); 
+    }
+  
+    return updatedUser as User; 
   }
+  
+  
 
   /* Delete user */
   async deleteUser(id: string): Promise<void> {
