@@ -37,7 +37,7 @@ export class AuthService {
   }
 
   async register(createUserDto: CreateUserDto): Promise<{ message: string; access_token?: string }> {
-    const { username, email, password, ...otherFields } = createUserDto;
+    const { username, email, plainPassword, ...otherFields } = createUserDto;
 
     const existingUser = await this.userModel.findOne({
        $or: [{ username }, { email }],
@@ -49,12 +49,12 @@ export class AuthService {
 
     // Hash the password
     const salt = await bcrypt.genSalt();
-    const userPassword = await bcrypt.hash(password, salt);
+    const password = await bcrypt.hash(plainPassword, salt);
 
     const createdUser = new this.userModel({
       username,
       email,
-      userPassword,
+      password,
       ...otherFields,
     });
 
