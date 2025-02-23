@@ -49,12 +49,12 @@ export class AuthService {
 
     // Hash the password
     const salt = await bcrypt.genSalt();
-    const passsword = await bcrypt.hash(password, salt);
+    const userPassword = await bcrypt.hash(password, salt);
 
     const createdUser = new this.userModel({
       username,
       email,
-      passsword,
+      userPassword,
       ...otherFields,
     });
 
