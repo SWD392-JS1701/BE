@@ -1,8 +1,8 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model, UpdateQuery } from 'mongoose'
+import { Model } from 'mongoose'
 import { Product, ProductDocument } from '../models/product.model'
-import { ProductDTO } from '~/dtos/product.dto'
+import { ProductDTO, UpdateProductDTO } from '~/dtos/product.dto'
 
 @Injectable()
 export class ProductsService {
@@ -34,7 +34,7 @@ export class ProductsService {
     return createdProduct.save()
   }
 
-  async update(id: string, updateProductDto: UpdateQuery<ProductDTO>): Promise<Product> {
+  async update(id: string, updateProductDto: UpdateProductDTO): Promise<Product> {
     const updatedProduct = await this.productModel.findByIdAndUpdate(id, updateProductDto, { new: true }).exec()
     if (!updatedProduct) {
       throw new NotFoundException(`Product with ID ${id} not found`)

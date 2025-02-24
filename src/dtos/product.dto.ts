@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsNumber, IsString, IsOptional, IsPositive, IsDate } from 'class-validator'
+import { ApiProperty, PartialType } from '@nestjs/swagger'
+import { IsNotEmpty, IsNumber, IsString, IsOptional, IsPositive, IsDate, ValidateIf } from 'class-validator'
 import { Type } from 'class-transformer'
 
 export class ProductDTO {
@@ -59,4 +59,18 @@ export class ProductDTO {
   @IsPositive()
   @Type(() => Number)
   volume!: number
+}
+
+export class UpdateProductDTO extends PartialType(ProductDTO) {
+  @ApiProperty({ example: 'Updated Product Name', required: false })
+  @IsString()
+  @IsOptional()
+  @ValidateIf((value) => value !== null) // Prevents null
+  name?: string
+
+  @ApiProperty({ example: 'Updated description here.', required: false })
+  @IsString()
+  @IsOptional()
+  @ValidateIf((value) => value !== null)
+  description?: string
 }
