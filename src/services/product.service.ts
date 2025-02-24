@@ -35,7 +35,15 @@ export class ProductsService {
   }
 
   async update(id: string, updateProductDto: UpdateProductDTO): Promise<Product> {
-    const updatedProduct = await this.productModel.findByIdAndUpdate(id, updateProductDto, { new: true }).exec()
+    const filteredUpdate = Object.fromEntries(
+      Object.entries(updateProductDto).filter(([, value]) => value !== null && value !== undefined && value !== '')
+    )
+
+    if (Object.keys(filteredUpdate).length === 0) {
+      throw new BadRequestException('No valid fields provided for update')
+    }
+
+    const updatedProduct = await this.productModel.findByIdAndUpdate(id, filteredUpdate, { new: true }).exec()
     if (!updatedProduct) {
       throw new NotFoundException(`Product with ID ${id} not found`)
     }
