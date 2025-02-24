@@ -1,37 +1,35 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
-import { Product, ProductDocument } from '../models/product.model'
+import { ProductRepository } from '../repositories/product.repository'
 import { ProductDTO, UpdateProductDTO } from '~/dtos/product.dto'
+import { Product } from '../models/product.model'
 
 @Injectable()
 export class ProductsService {
-  constructor(@InjectModel(Product.name) private productModel: Model<ProductDocument>) {}
+  constructor(private readonly productRepository: ProductRepository) {}
 
   async findAll(): Promise<Product[]> {
-    return this.productModel.find().exec()
+    return this.productRepository.findAll()
   }
 
   async findOne(id: string): Promise<Product> {
-    const product = await this.productModel.findById(id).exec()
+    const product = await this.productRepository.findById(id)
     if (!product) throw new NotFoundException(`Product with ID ${id} not found`)
     return product
   }
 
   async findByName(name: string): Promise<Product[]> {
-    return this.productModel.find({ name: { $regex: new RegExp(name, 'i') } }).exec()
+    return this.productRepository.findByName(name)
   }
 
   async findByExactName(name: string): Promise<Product | null> {
-    return this.productModel.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } }).exec()
+    return this.productRepository.findByExactName(name)
   }
 
   async create(createProductDto: ProductDTO): Promise<Product> {
     const existingProduct = await this.findByExactName(createProductDto.name)
     if (existingProduct) throw new BadRequestException(`Product name already exists: ${createProductDto.name}`)
 
-    const createdProduct = new this.productModel(createProductDto)
-    return createdProduct.save()
+    return this.productRepository.create(createProductDto)
   }
 
   async update(id: string, updateProductDto: UpdateProductDTO): Promise<Product> {
@@ -43,7 +41,7 @@ export class ProductsService {
       throw new BadRequestException('No valid fields provided for update')
     }
 
-    const updatedProduct = await this.productModel.findByIdAndUpdate(id, filteredUpdate, { new: true }).exec()
+    const updatedProduct = await this.productRepository.update(id, filteredUpdate)
     if (!updatedProduct) {
       throw new NotFoundException(`Product with ID ${id} not found`)
     }
@@ -51,7 +49,7 @@ export class ProductsService {
   }
 
   async remove(id: string): Promise<Product> {
-    const deletedProduct = await this.productModel.findByIdAndDelete(id).exec()
+    const deletedProduct = await this.productRepository.delete(id)
     if (!deletedProduct) {
       throw new NotFoundException(`Product with ID ${id} not found`)
     }

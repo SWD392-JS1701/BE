@@ -1,28 +1,30 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
-import { Promotion, PromotionDocument } from '../models/promotion.model'
+import { PromotionRepository } from '../repositories/promotion.repository'
 import { CreatePromotionDto, UpdatePromotionDto } from '~/dtos/promotion.dto'
+import { Promotion } from '../models/promotion.model'
 
 @Injectable()
 export class PromotionService {
-  constructor(@InjectModel(Promotion.name) private promotionModel: Model<PromotionDocument>) {}
+  constructor(private readonly promotionRepository: PromotionRepository) {}
 
   async create(createPromotionDto: CreatePromotionDto): Promise<Promotion> {
-    const createdPromotion = new this.promotionModel(createPromotionDto)
-    return createdPromotion.save()
+    return this.promotionRepository.create(createPromotionDto)
   }
 
   async findAll(): Promise<Promotion[]> {
-    return this.promotionModel.find().exec()
+    return this.promotionRepository.findAll()
   }
 
-  async findOne(id: string): Promise<Promotion | null> {
-    return this.promotionModel.findById(id).exec()
+  async findOne(id: string): Promise<Promotion> {
+    const promotion = await this.promotionRepository.findById(id)
+    if (!promotion) {
+      throw new NotFoundException(`Promotion with id ${id} not found`)
+    }
+    return promotion
   }
 
   async update(id: string, updatePromotionDto: UpdatePromotionDto): Promise<Promotion> {
-    const updatedPromotion = await this.promotionModel.findByIdAndUpdate(id, updatePromotionDto, { new: true }).exec()
+    const updatedPromotion = await this.promotionRepository.update(id, updatePromotionDto)
     if (!updatedPromotion) {
       throw new NotFoundException(`Promotion with id ${id} not found`)
     }
@@ -30,7 +32,7 @@ export class PromotionService {
   }
 
   async remove(id: string): Promise<Promotion> {
-    const removedPromotion = await this.promotionModel.findByIdAndDelete(id).exec()
+    const removedPromotion = await this.promotionRepository.delete(id)
     if (!removedPromotion) {
       throw new NotFoundException(`Promotion with id ${id} not found`)
     }
