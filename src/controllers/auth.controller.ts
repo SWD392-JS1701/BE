@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Get, Req, UseGuards } from '@nestjs/common'
 import { AuthService } from '../services/auth.service'
 import { CreateUserDto, LoginDto } from '../dtos/user.dto'
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiOperation } from '@nestjs/swagger'
 import { UserService } from '../services/user.service'
 import { CustomRequest } from '../custom/custom-request'
 import { JwtAuthGuard } from '../guards/JwtAuthGuard'
