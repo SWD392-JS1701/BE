@@ -8,6 +8,7 @@ import { AuthModule } from './auth.module'
 import { UserModule } from './user.module'
 import { PromotionModule } from './promotion.module'
 import { DoctorModule } from './doctor.module'
+import { productTypesModule } from './productType.module'
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { DoctorModule } from './doctor.module'
     AuthModule,
     UserModule,
     ProductsModule,
+    productTypesModule,
     PromotionModule,
     DoctorModule,
     MongooseModule.forRootAsync({
