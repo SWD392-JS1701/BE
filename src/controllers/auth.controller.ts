@@ -3,8 +3,7 @@ import { AuthService } from '../services/auth.service'
 import { CreateUserDto, LoginDto } from '../dtos/user.dto'
 import { ApiOperation } from '@nestjs/swagger'
 import { UserService } from '../services/user.service'
-import { CustomRequest } from '../custom/custom-request'
-import { JwtAuthGuard } from '../guards/JwtAuthGuard'
+
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -22,12 +21,5 @@ export class AuthController {
   @ApiOperation({ summary: 'User Registration' })
   async register(@Body() createUserDto: CreateUserDto) {
     return this.authService.register(createUserDto)
-  }
-
-  @Get('profile')
-  @UseGuards(JwtAuthGuard)
-  async getProfile(@Req() req: CustomRequest) {
-    const userId = req.user.id
-    return this.userService.getUserById(userId)
   }
 }
