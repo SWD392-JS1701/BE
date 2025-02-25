@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
-import { CreatePromotionDto } from '~/dtos/createPromotion.dto'
-import { UpdatePromotionDto } from '~/dtos/updatePromotion.dto'
+import { CreatePromotionDto, UpdatePromotionDto } from '~/dtos/promotion.dto'
 import { PromotionService } from '~/services/promotion.service'
 
 @Controller('promotions')

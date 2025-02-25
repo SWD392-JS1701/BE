@@ -1,44 +1,77 @@
-import { IsString, IsOptional, IsNumber, IsDate, Min, Max } from 'class-validator'
+import { ApiProperty, PartialType } from '@nestjs/swagger'
+import { IsNotEmpty, IsNumber, IsString, IsOptional, IsPositive, IsDate, ValidateIf, Max } from 'class-validator'
+import { Type } from 'class-transformer'
 
 export class ProductDTO {
+  @ApiProperty({ example: 'Sample Product' })
   @IsString()
+  @IsNotEmpty()
   name!: string
 
-  @IsOptional()
+  @ApiProperty({ example: 4.5, required: false })
   @IsNumber()
-  @Min(0)
+  @IsPositive()
   @Max(5)
-  product_rating?: number
-
   @IsOptional()
+  @Type(() => Number)
+  product_rating?: number = 0
+
+  @ApiProperty({ example: 'This is a product description.', required: false })
   @IsString()
+  @IsOptional()
   description?: string
 
+  @ApiProperty({ example: 100.0 })
   @IsNumber()
-  @Min(0)
+  @IsPositive()
+  @Type(() => Number)
   price!: number
 
+  @ApiProperty({ example: 50 })
   @IsNumber()
-  @Min(0)
+  @IsPositive()
+  @Type(() => Number)
   stock!: number
 
+  @ApiProperty({ example: 1 })
   @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
   product_type_id!: number
 
-  @IsOptional()
+  @ApiProperty({ example: 'https://example.com/image.jpg', required: false })
   @IsString()
+  @IsOptional()
   image_url?: string
 
-  @IsOptional()
+  @ApiProperty({ example: 'Supplier Name', required: false })
   @IsString()
-  Supplier?: string
+  @IsNotEmpty()
+  supplier_name!: string
 
-  @IsOptional()
+  @ApiProperty({ example: '2025-12-31T23:59:59.999Z', required: false })
   @IsDate()
+  @IsOptional()
+  @Type(() => Date)
   expired_date?: Date
 
-  @IsOptional()
+  @ApiProperty({ example: 1.5 })
   @IsNumber()
-  @Min(0)
-  volume?: number
+  @IsPositive()
+  @Type(() => Number)
+  volume!: number
+}
+
+export class UpdateProductDTO extends PartialType(ProductDTO) {
+  @ApiProperty({ example: 'Updated Product Name', required: false })
+  @IsString()
+  @IsOptional()
+  @ValidateIf((value) => value !== null && value !== '') // Prevents null
+  name?: string
+
+  @ApiProperty({ example: 'Updated description here.', required: false })
+  @IsString()
+  @IsOptional()
+  @ValidateIf((value) => value !== null)
+  description?: string
 }

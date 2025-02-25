@@ -1,8 +1,6 @@
 import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common'
 import { ProductsService } from '../services/product.service'
-import { UpdateQuery } from 'mongoose'
-import { Product } from '~/models/product.model'
-import { ProductDTO } from '~/dtos/product.dto'
+import { ProductDTO, UpdateProductDTO } from '~/dtos/product.dto'
 
 @Controller('products')
 export class ProductsController {
@@ -24,7 +22,7 @@ export class ProductsController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateProductDto: UpdateQuery<Product>) {
+  async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDTO) {
     return this.productsService.update(id, updateProductDto)
   }
 

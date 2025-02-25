@@ -9,7 +9,7 @@ export class User {
   username!: string
 
   @Prop({ required: true })
-  passsword!: string
+  password!: string
 
   @Prop()
   date_of_birth!: Date
@@ -17,7 +17,7 @@ export class User {
   @Prop({ required: true, unique: true })
   email!: string
 
-  @Prop({ default: 'User' })
+  @Prop()
   role!: string
 
   @Prop()
@@ -43,6 +43,12 @@ export class User {
 
   @Prop({ default: 1 })
   status!: number
+
+  @Prop()
+  skinType?: string
+
+  @Prop()
+  sensitivity?: string
 
   createdAt!: Date
   updatedAt!: Date

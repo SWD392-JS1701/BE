@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from './modules/app.module'
 import * as dotenv from 'dotenv'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { ValidationPipe } from '@nestjs/common'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -17,10 +18,17 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document)
 
   app.enableCors({
-    // true for all origins
     origin: '*'
   })
 
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true
+    })
+  )
+
   await app.listen(process.env.PORT ?? 4000)
 }
-bootstrap()
+void bootstrap()

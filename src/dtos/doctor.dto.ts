@@ -3,9 +3,9 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateDoctorDto {
     @ApiProperty({ example: 101, description: 'Associated user ID' })
-    @IsNumber()
+    @IsString()
     @IsNotEmpty()
-    user_Id!: number;
+    user_Id!: string;
   
     @ApiProperty({ example: 'MBBS, MD', description: 'Doctor certification' })
     @IsString()
@@ -26,9 +26,9 @@ export class CreateDoctorDto {
 
   export class UpdateDoctorDto {
      @ApiPropertyOptional({ example: 101, description: 'Associated user ID' })
-    @IsNumber()
+    @IsString()
     @IsOptional()
-    user_Id?: number;
+    user_Id?: string;
   
     @ApiPropertyOptional({ example: 'MBBS, MD', description: 'Doctor certification' })
     @IsString()

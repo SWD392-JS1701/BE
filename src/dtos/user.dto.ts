@@ -6,7 +6,7 @@ export class CreateUserDto {
 
   @IsString()
   @MinLength(6)
-  password!: string
+  plainPassword!: string
 
   @IsEmail()
   email!: string
@@ -44,6 +44,14 @@ export class CreateUserDto {
   @IsOptional()
   @IsInt()
   status!: number
+
+  @IsOptional()
+  @IsString()
+  skinType?: string
+
+  @IsOptional()
+  @IsString()
+  sensitivity?: string
 }
 
 export class UpdateUserDto {
@@ -54,7 +62,7 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   @MinLength(6)
-  password?: string
+  plainPassword?: string
 
   @IsOptional()
   @IsEmail()
@@ -89,6 +97,14 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   address?: string
+
+  @IsOptional()
+  @IsString()
+  skinType?: string
+
+  @IsOptional()
+  @IsString()
+  sensitivity?: string
 
   @IsOptional()
   @IsString()
