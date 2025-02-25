@@ -14,6 +14,7 @@ export class UserController {
   }
 
   /** Get all users */
+  @UseGuards(AuthGuard)
   @Get()
   async getAllUsers() {
     return this.userService.getAllUsers()
