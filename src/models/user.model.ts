@@ -44,6 +44,12 @@ export class User {
   @Prop({ default: 1 })
   status!: number
 
+  @Prop()
+  skinType?: string
+
+  @Prop()
+  sensitivity?: string
+
   createdAt!: Date
   updatedAt!: Date
 }

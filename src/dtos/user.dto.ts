@@ -44,6 +44,14 @@ export class CreateUserDto {
   @IsOptional()
   @IsInt()
   status!: number
+
+  @IsOptional()
+  @IsString()
+  skinType?: string
+
+  @IsOptional()
+  @IsString()
+  sensitivity?: string
 }
 
 export class UpdateUserDto {
@@ -89,6 +97,14 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   address?: string
+
+  @IsOptional()
+  @IsString()
+  skinType?: string
+
+  @IsOptional()
+  @IsString()
+  sensitivity?: string
 
   @IsOptional()
   @IsString()

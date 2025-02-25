@@ -50,7 +50,7 @@ export class AuthService {
     // Hash the password
     const salt = await bcrypt.genSalt();
     const password = await bcrypt.hash(plainPassword, salt);
-    const role = createUserDto.role ?? 'user';
+    const role = createUserDto.role ?? 'User';
 
     const createdUser = new this.userModel({
       username,
