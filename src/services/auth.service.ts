@@ -6,6 +6,8 @@ import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from '../models/user.model';
 import { CreateUserDto, LoginDto } from '../dtos/user.dto';
 
+const JWT_SECRET = process.env.JWT_SECRET;
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -31,7 +33,7 @@ export class AuthService {
     }
 
     const payload = { id: user._id, username: user.username,  role: user.role };
-    const access_token = this.jwtService.sign(payload);
+    const access_token = await this.jwtService.signAsync(payload);
 
     return { access_token };
   }

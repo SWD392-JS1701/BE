@@ -14,8 +14,9 @@ dotenv.config()
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     JwtModule.registerAsync({
       useFactory: async () => ({
+        global: true,
         secret: process.env.JWT_SECRET,
-        signOptions: { expiresIn: '1h' }
+        signOptions: { expiresIn: '60s' }
       })
     }),
     UserModule 
