@@ -1,50 +1,44 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { ScheduleRepository } from '../repositories/schedule.repository';
+import { Controller, Get, Post, Put, Delete, Param, Body, NotFoundException } from '@nestjs/common';
+import { ScheduleService } from '../services/schedule.service';
 import { Schedule, ScheduleDocument, Slot } from '../models/schedule.model';
 
-@Injectable()
-export class ScheduleService {
-  constructor(private readonly scheduleRepository: ScheduleRepository) {}
+@Controller('schedules')
+export class ScheduleController {
+  constructor(private readonly scheduleService: ScheduleService) {}
 
-  async createSchedule(scheduleData: Partial<Schedule>): Promise<ScheduleDocument> {
-    return this.scheduleRepository.create(scheduleData);
+  @Post()
+  async createSchedule(@Body() scheduleData: Partial<Schedule>): Promise<ScheduleDocument> {
+    return this.scheduleService.createSchedule(scheduleData);
   }
 
+  @Get()
   async getSchedules(): Promise<ScheduleDocument[]> {
-    return this.scheduleRepository.findAll();
+    return this.scheduleService.getSchedules();
   }
 
-  async getScheduleById(id: string): Promise<ScheduleDocument> {
-    const schedule = await this.scheduleRepository.findById(id);
-    if (!schedule) {
-      throw new NotFoundException(`Schedule with id ${id} not found`);
-    }
-    return schedule;
+  @Get(':id')
+  async getScheduleById(@Param('id') id: string): Promise<ScheduleDocument> {
+    return this.scheduleService.getScheduleById(id);
   }
 
-  async getSlotById(dayOfWeek: string, slotId: string): Promise<Slot> {
-    const slot = await this.scheduleRepository.findSlotById(dayOfWeek, slotId);
-    if (!slot) {
-      throw new NotFoundException(
-        `Slot with id ${slotId} not found on day ${dayOfWeek}`,
-      );
-    }
-    return slot;
+  @Get(':dayOfWeek/slots/:slotId')
+  async getSlotById(
+    @Param('dayOfWeek') dayOfWeek: string,
+    @Param('slotId') slotId: string
+  ): Promise<Slot> {
+    return this.scheduleService.getSlotById(dayOfWeek, slotId);
   }
 
-  async updateSchedule(id: string, scheduleData: Partial<Schedule>): Promise<ScheduleDocument> {
-    const schedule = await this.scheduleRepository.update(id, scheduleData);
-    if (!schedule) {
-      throw new NotFoundException(`Schedule with id ${id} not found`);
-    }
-    return schedule;
+  @Put(':id')
+  async updateSchedule(
+    @Param('id') id: string,
+    @Body() scheduleData: Partial<Schedule>
+  ): Promise<ScheduleDocument> {
+    return this.scheduleService.updateSchedule(id, scheduleData);
   }
 
-  async deleteSchedule(id: string): Promise<ScheduleDocument> {
-    const schedule = await this.scheduleRepository.delete(id);
-    if (!schedule) {
-      throw new NotFoundException(`Schedule with id ${id} not found`);
-    }
-    return schedule;
+  @Delete(':id')
+  async deleteSchedule(@Param('id') id: string): Promise<ScheduleDocument> {
+    return this.scheduleService.deleteSchedule(id);
   }
 }
