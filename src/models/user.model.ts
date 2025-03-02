@@ -24,7 +24,7 @@ export class User {
   skin_type?: string
 
   @Prop()
-  membership_id!: number
+  membership_id!: string
 
   @Prop({ default: 0 })
   point!: number
