@@ -1,10 +1,10 @@
-import { BadGatewayException, BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from '../models/user.model';
-import { CreateUserDto, LoginDto } from '../dtos/user.dto';
+import { CreateUserDto, LoginDto, ResetPasswordDto } from '../dtos/user.dto';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -67,6 +67,28 @@ export class AuthService {
      const payload = { id: createdUser._id, username: createdUser.username, role: createdUser.role };
      const access_token = this.jwtService.sign(payload);
      return { message: 'Registration successful', access_token };
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
+    const { token, newPassword } = resetPasswordDto;
+
+    try {
+      const decoded = this.jwtService.verify(token);
+      const user = await this.userModel.findById(decoded.id).exec();
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      // Hash the new password
+      const salt = await bcrypt.genSalt();
+      user.password = await bcrypt.hash(newPassword, salt);
+      await user.save();
+
+      return { message: 'Password reset successful' };
+    } catch (error) {
+      throw new BadRequestException('Invalid or expired token');
+    }
   }
   
 }

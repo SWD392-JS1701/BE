@@ -1,14 +1,15 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, NotFoundException } from '@nestjs/common';
 import { ScheduleService } from '../services/schedule.service';
 import { Schedule, ScheduleDocument, Slot } from '../models/schedule.model';
+import { CreateScheduleDto } from '~/dtos/schedule.dto';
 
 @Controller('schedules')
 export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
   @Post()
-  async createSchedule(@Body() scheduleData: Partial<Schedule>): Promise<ScheduleDocument> {
-    return this.scheduleService.createSchedule(scheduleData);
+  async createSchedule(@Body() createScheduleDto: CreateScheduleDto): Promise<ScheduleDocument> {
+    return this.scheduleService.createSchedule(createScheduleDto);
   }
 
   @Get()
