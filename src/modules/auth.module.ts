@@ -7,6 +7,7 @@ import { AuthController } from '~/controllers/auth.controller'
 import { UserModule } from '../modules/user.module';
 import { AuthGuard } from '~/auth/auth.guard'
 import * as dotenv from 'dotenv'
+import { AuthRepository } from '~/repositories/auth.repository'
 
 dotenv.config()
 
@@ -23,7 +24,7 @@ dotenv.config()
     UserModule 
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthGuard],
-  exports: [AuthService, JwtModule, AuthGuard]
+  providers: [AuthService, AuthGuard, AuthRepository],
+  exports: [AuthService, JwtModule, AuthGuard, AuthRepository]
 })
 export class AuthModule {}
