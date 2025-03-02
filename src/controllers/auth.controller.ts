@@ -2,13 +2,11 @@ import { Controller, Post, Body, Get, Req, UseGuards } from '@nestjs/common'
 import { AuthService } from '../services/auth.service'
 import { CreateUserDto, LoginDto, ResetPasswordDto } from '../dtos/user.dto'
 import { ApiOperation } from '@nestjs/swagger'
-import { UserService } from '../services/user.service'
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserService
   ) {}
 
   @Post('login')

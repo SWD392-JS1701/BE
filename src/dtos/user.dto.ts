@@ -128,6 +128,11 @@ export class LoginDto {
 }
 
 export class ResetPasswordDto {
+  @IsOptional()
+  @IsString()
   token!: string;
+
+  @IsOptional()
+  @IsString()
   newPassword!: string;
 }

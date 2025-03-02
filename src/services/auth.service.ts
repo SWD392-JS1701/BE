@@ -33,7 +33,7 @@ export class AuthService {
     }
 
     const payload = { id: user._id, username: user.username,  role: user.role };
-    const access_token = await this.jwtService.signAsync(payload);
+    const access_token = await this.jwtService.signAsync(payload, { secret: JWT_SECRET });
 
     return { access_token };
   }
@@ -65,15 +65,18 @@ export class AuthService {
     await createdUser.save();
 
      const payload = { id: createdUser._id, username: createdUser.username, role: createdUser.role };
-     const access_token = this.jwtService.sign(payload);
+     const access_token = this.jwtService.sign(payload, { secret: JWT_SECRET });
      return { message: 'Registration successful', access_token };
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
     const { token, newPassword } = resetPasswordDto;
-
     try {
-      const decoded = this.jwtService.verify(token);
+      const decoded = await this.jwtService.verifyAsync(token, {
+        secret: JWT_SECRET, 
+        algorithms: ['HS256'], 
+      });
+
       const user = await this.userModel.findById(decoded.id).exec();
 
       if (!user) {
