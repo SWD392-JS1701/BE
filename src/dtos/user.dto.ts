@@ -126,3 +126,8 @@ export class LoginDto {
   @IsString()
   password!: string
 }
+
+export class ResetPasswordDto {
+  token!: string;
+  newPassword!: string;
+}

@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ScheduleRepository } from '../repositories/schedule.repository';
 import { Schedule, ScheduleDocument, Slot } from '../models/schedule.model';
+import { CreateScheduleDto } from '../dtos/schedule.dto';
 
 @Injectable()
 export class ScheduleService {
   constructor(private readonly scheduleRepository: ScheduleRepository) {}
 
-  async createSchedule(scheduleData: Partial<Schedule>): Promise<ScheduleDocument> {
-    return this.scheduleRepository.create(scheduleData);
+  async createSchedule(createScheduleDto : CreateScheduleDto): Promise<ScheduleDocument> {
+    return this.scheduleRepository.create(createScheduleDto);
   }
 
   async getSchedules(): Promise<ScheduleDocument[]> {

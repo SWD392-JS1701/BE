@@ -15,16 +15,16 @@ export class Slot {
   @Prop({ required: true })
   endTime!: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'Doctor', default: null })
-  doctorId?: Types.ObjectId | null;
+  @Prop({ type: String, default: null })
+  doctorId?: string | null;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   doctorName?: string | null;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   specialization?: string | null;
 
-  @Prop({ default: 'available' })
+  @Prop({ type: String, default: 'available' })
   status!: string;
 }
 
