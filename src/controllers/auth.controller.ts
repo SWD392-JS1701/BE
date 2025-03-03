@@ -1,14 +1,12 @@
 import { Controller, Post, Body, Get, Req, UseGuards } from '@nestjs/common'
 import { AuthService } from '../services/auth.service'
-import { CreateUserDto, LoginDto } from '../dtos/user.dto'
+import { CreateUserDto, ForgotPasswordDto, LoginDto, ResetPasswordDto } from '../dtos/user.dto'
 import { ApiOperation } from '@nestjs/swagger'
-import { UserService } from '../services/user.service'
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserService
   ) {}
 
   @Post('login')
@@ -22,4 +20,14 @@ export class AuthController {
   async register(@Body() createUserDto: CreateUserDto) {
     return this.authService.register(createUserDto)
   }
+
+  @Post('reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto);
+  }
+
+  // @Post('forgot-password')
+  // async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+  //   return this.authService.forgotPassword(forgotPasswordDto.email);
+  // }
 }

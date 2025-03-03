@@ -9,6 +9,8 @@ import { UserModule } from './user.module'
 import { PromotionModule } from './promotion.module'
 import { DoctorModule } from './doctor.module'
 import { productTypesModule } from './productType.module'
+import { ScheduleModule } from './schedule.module'
+import { MembershipModule } from './membership.module'
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { productTypesModule } from './productType.module'
     productTypesModule,
     PromotionModule,
     DoctorModule,
+    ScheduleModule,
+    MembershipModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
