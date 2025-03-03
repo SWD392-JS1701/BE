@@ -21,7 +21,7 @@ export class CreateUserDto {
   skin_type?: string
 
   @IsOptional()
-  membership_id?: number
+  membership_id?: string
 
   @IsOptional()
   point?: number
@@ -78,7 +78,7 @@ export class UpdateUserDto {
   skin_type?: string
 
   @IsOptional()
-  membership_id?: number
+  membership_id?: string
 
   @IsOptional()
   point?: number
