@@ -26,8 +26,8 @@ export class AuthController {
     return this.authService.resetPassword(resetPasswordDto);
   }
 
-  // @Post('forgot-password')
-  // async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-  //   return this.authService.forgotPassword(forgotPasswordDto.email);
-  // }
+   @Post('forgot-password')
+   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto.email);
+  }
 }

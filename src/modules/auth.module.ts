@@ -8,12 +8,16 @@ import { UserModule } from '../modules/user.module';
 import { AuthGuard } from '~/auth/auth.guard'
 import * as dotenv from 'dotenv'
 import { AuthRepository } from '~/repositories/auth.repository'
+import { MailService } from '~/services/mail.service'
+import { ResetToken, ResetTokenModel } from '../models/reset-token.model';
 
 dotenv.config()
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema },
+      { name: ResetToken.name, schema: ResetTokenModel }
+    ]),
     JwtModule.registerAsync({
       useFactory: async () => ({
         global: true,
@@ -24,7 +28,7 @@ dotenv.config()
     UserModule 
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthGuard, AuthRepository],
+  providers: [AuthService, AuthGuard, AuthRepository, MailService],
   exports: [AuthService, JwtModule, AuthGuard, AuthRepository]
 })
 export class AuthModule {}

@@ -1,6 +1,8 @@
 import * as nodemailer from 'nodemailer';
 import { Injectable } from '@nestjs/common';
 
+const FrontEndUrl = process.env.FRONT_END_URL;
+
 @Injectable()
 export class MailService {
   private transporter: nodemailer.Transporter;
@@ -17,7 +19,7 @@ export class MailService {
   }
 
   async sendPasswordResetEmail(to: string, token: string) {
-    const resetLink = `http://yourapp.com/reset-password?token=${token}`;
+    const resetLink = `http://${FrontEndUrl}/reset-password?token=${token}`;
     const mailOptions = {
       from: 'Auth-backend service',
       to: to,
