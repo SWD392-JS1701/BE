@@ -8,6 +8,7 @@ import { AuthModule } from './auth.module'
 import { UserModule } from './user.module'
 import { PromotionModule } from './promotion.module'
 import { DoctorModule } from './doctor.module'
+import { ScheduleModule } from './schedule.module'
 
 @Module({
   imports: [
@@ -19,6 +20,8 @@ import { DoctorModule } from './doctor.module'
     ProductsModule,
     PromotionModule,
     DoctorModule,
+    ScheduleModule,
+    
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
