@@ -2,6 +2,9 @@ import * as nodemailer from 'nodemailer';
 import { Injectable } from '@nestjs/common';
 
 const FrontEndUrl = process.env.FRONT_END_URL;
+const email = process.env.EMAIL;
+const password = process.env.EMAIL_PASSWORD;
+
 
 @Injectable()
 export class MailService {
@@ -9,11 +12,11 @@ export class MailService {
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
+      host: 'smtp.gmail.com',
       port: 587,
       auth: {
-        user: 'lilla.terry55@ethereal.email',
-        pass: 'yQQSg25MR1QwugbNnN',
+        user: `${email}`,
+        pass: `${password}`,
       },
     });
   }
