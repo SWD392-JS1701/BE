@@ -1,16 +1,30 @@
-import { BadRequestException, NotFoundException, UnauthorizedException, Injectable } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-import { CreateUserDto, LoginDto, ResetPasswordDto } from '~/dtos/user.dto'
-import { AuthRepository } from '~/repositories/auth.repository'
-import * as bcrypt from 'bcrypt'
 
-const JWT_SECRET = process.env.JWT_SECRET
+import { BadRequestException, NotFoundException, UnauthorizedException, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { CreateUserDto, LoginDto, ResetPasswordDto } from "~/dtos/user.dto";
+import { AuthRepository } from "~/repositories/auth.repository";
+import * as bcrypt from 'bcrypt';
+import { MailService } from "~/services/mail.service";
+import { ResetToken, ResetTokenModel } from "~/models/reset-token.model";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model, Mongoose, Types } from "mongoose";
+import { nanoid } from "nanoid";
+import { UserRepository } from "~/repositories/user.repository";
+import * as mongoose from 'mongoose';
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly authRepository: AuthRepository,
-    private readonly jwtService: JwtService
+
+    private readonly userRepository: UserRepository,
+    private readonly mailService: MailService,
+    private readonly authRepository: AuthRepository, 
+    private readonly jwtService: JwtService,
+    @InjectModel('ResetToken') private readonly resetTokenModel: Model<ResetToken>, 
+
   ) {}
 
   async login(loginDto: LoginDto): Promise<{ access_token: string }> {
@@ -71,5 +85,44 @@ export class AuthService {
     } catch (error) {
       throw new BadRequestException('Invalid or expired token')
     }
+  }
+
+  async forgotPassword(email: string) {
+    //Check that user exists
+    let user = await this.authRepository.findByEmailOrUsername(email);
+
+    if (user) {
+      const expiryDate = new Date();
+      expiryDate.setHours(expiryDate.getHours() + 1);
+
+      const resetToken = nanoid(64);
+      await this.resetTokenModel.create({
+        token: resetToken,
+        userId: user._id,
+        expiryDate,
+      });
+      //Send the link to the user by email
+      this.mailService.sendPasswordResetEmail(email, resetToken);
+    }
+    return { message: 'If this user exists, they will receive an email' };
+  }
+
+  async changePassword(newPassword: string, resetToken: string) {
+    const token = await this.resetTokenModel.findOneAndDelete({
+      token: resetToken,
+      expiryDate: { $gte: new Date() },
+    });
+
+    if (!token) {
+      throw new UnauthorizedException('Invalid link');
+    }
+
+    const user = await this.userRepository.findById(token.userId);
+    if (!user) {
+      throw new InternalServerErrorException();
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await this.userRepository.update(token.userId, user);
   }
 }

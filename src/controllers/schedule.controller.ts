@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, NotFoundException } from '@nestjs/common';
 import { ScheduleService } from '../services/schedule.service';
 import { Schedule, ScheduleDocument, Slot } from '../models/schedule.model';
-import { CreateScheduleDto } from '~/dtos/schedule.dto';
+import { CreateScheduleDto, UpdateScheduleDto, UpdateSlotDto } from '~/dtos/schedule.dto';
 
 @Controller('schedules')
 export class ScheduleController {
@@ -33,13 +33,17 @@ export class ScheduleController {
   @Put(':id')
   async updateSchedule(
     @Param('id') id: string,
-    @Body() scheduleData: Partial<Schedule>
+    @Body() scheduleData: UpdateScheduleDto
   ): Promise<ScheduleDocument> {
     return this.scheduleService.updateSchedule(id, scheduleData);
   }
 
-  @Delete(':id')
-  async deleteSchedule(@Param('id') id: string): Promise<ScheduleDocument> {
-    return this.scheduleService.deleteSchedule(id);
+  @Put(':scheduleId/slots/:slotId')
+  async updateSlot(
+    @Param('scheduleId') scheduleId: string,
+    @Param('slotId') slotId: string,
+    @Body() updateSlotDto: UpdateSlotDto
+  ) {
+    return await this.scheduleService.updateSlot(scheduleId, slotId, updateSlotDto);
   }
 }
