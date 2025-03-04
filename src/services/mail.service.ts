@@ -25,7 +25,7 @@ export class MailService {
   }
 
   async sendPasswordResetEmail(to: string, token: string) {
-    const resetLink = `http://${this.frontEndUrl}/reset-password?token=${token}`;
+    const resetLink = `http://${this.frontEndUrl}/change-password?token=${token}`;
     const mailOptions = {
       from: 'Auth-backend service',
       to: to,
