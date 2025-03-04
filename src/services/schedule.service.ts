@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ScheduleRepository } from '../repositories/schedule.repository';
 import { Schedule, ScheduleDocument, Slot } from '../models/schedule.model';
-import { CreateScheduleDto, UpdateSlotDto } from '../dtos/schedule.dto';
+import { CreateScheduleDto, UpdateScheduleDto, UpdateSlotDto } from '../dtos/schedule.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -33,7 +33,7 @@ export class ScheduleService {
     return slot;
   }
 
-  async updateSchedule(id: string, scheduleData: Partial<Schedule>): Promise<ScheduleDocument> {
+  async updateSchedule(id: string, scheduleData: UpdateScheduleDto): Promise<ScheduleDocument> {
     const schedule = await this.scheduleRepository.update(id, scheduleData);
     if (!schedule) {
       throw new NotFoundException(`Schedule with id ${id} not found`);

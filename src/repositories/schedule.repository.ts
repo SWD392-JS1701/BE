@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Schedule, ScheduleDocument, Slot } from '../models/schedule.model';
-import { UpdateSlotDto } from '~/dtos/schedule.dto';
+import { UpdateScheduleDto, UpdateSlotDto } from '~/dtos/schedule.dto';
 
 @Injectable()
 export class ScheduleRepository {
@@ -36,9 +36,9 @@ export class ScheduleRepository {
       : null;
   }
 
-  async update(id: string, schedule: Partial<Schedule>): Promise<ScheduleDocument | null> {
+  async update(id: string, updateData : UpdateScheduleDto): Promise<ScheduleDocument | null> {
     return this.scheduleModel
-      .findByIdAndUpdate(id, schedule, { new: true })
+      .findByIdAndUpdate(id, updateData, { new: true })
       .exec();
   }
 
