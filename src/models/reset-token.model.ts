@@ -5,8 +5,8 @@ import mongoose, { Document } from 'mongoose';
 export class ResetToken extends Document {
   @Prop({ required: true })
   token!: string;
-  @Prop({ required: true, type: mongoose.Types.ObjectId })
-  userId!: mongoose.Types.ObjectId;
+  @Prop({ required: true })
+  userId!: string;
   @Prop({ required: true })
   expiryDate!: Date;
 }

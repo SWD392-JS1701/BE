@@ -10,6 +10,7 @@ import * as dotenv from 'dotenv'
 import { AuthRepository } from '~/repositories/auth.repository'
 import { MailService } from '~/services/mail.service'
 import { ResetToken, ResetTokenModel } from '../models/reset-token.model';
+import { UserRepository } from '~/repositories/user.repository'
 
 dotenv.config()
 
@@ -28,7 +29,7 @@ dotenv.config()
     UserModule 
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthGuard, AuthRepository, MailService],
+  providers: [AuthService, AuthGuard, AuthRepository, MailService, UserRepository],
   exports: [AuthService, JwtModule, AuthGuard, AuthRepository]
 })
 export class AuthModule {}
