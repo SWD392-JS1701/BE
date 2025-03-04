@@ -30,13 +30,13 @@ export class UserController {
   /** Get user by username */
   @Get(':username')
   async getUserByUsername(@Param('username') username: string) {
-    return this.userService.getUserByUsername(username);
+    return this.userService.getUserByUsername(username)
   }
 
   /** Get user by email */
   @Get(':email')
   async getUserByEmail(@Param('email') email: string) {
-    return this.userService.getUserByEmail(email);
+    return this.userService.getUserByEmail(email)
   }
 
   /** Update user */
@@ -47,7 +47,7 @@ export class UserController {
 
   /** Delete user */
   @Delete(':id')
-  async deleteUser(@Param('id') id: string , @Body() deleteUserDto: DeleteUserDto) {
+  async deleteUser(@Param('id') id: string, @Body() deleteUserDto: DeleteUserDto) {
     return this.userService.updateUser(id, deleteUserDto)
   }
 }
