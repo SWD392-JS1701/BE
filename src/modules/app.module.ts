@@ -11,6 +11,7 @@ import { DoctorModule } from './doctor.module'
 import { productTypesModule } from './productType.module'
 import { ScheduleModule } from './schedule.module'
 import { MembershipModule } from './membership.module'
+import { ComboModule } from './combo.module'
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { MembershipModule } from './membership.module'
     DoctorModule,
     ScheduleModule,
     MembershipModule,
+    ComboModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
