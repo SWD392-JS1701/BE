@@ -24,9 +24,6 @@ export class CreateScheduleDto{
         doctorName!: string;
 
         @IsString()
-        specialization!: string;
-
-        @IsString()
         status!: string;
 }
 
@@ -63,11 +60,6 @@ export class UpdateSlotDto {
   @IsOptional()
   @IsString()
   doctorName?: string;
-
-  @ApiPropertyOptional({ example: "Cardiology", description: "Doctor's specialization" })
-  @IsOptional()
-  @IsString()
-  specialization?: string;
 
   @ApiPropertyOptional({
     example: "booked",
