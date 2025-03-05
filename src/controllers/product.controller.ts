@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Put, Delete, Query, HttpException, HttpStatus } from '@nestjs/common'
 import { ProductsService } from '../services/product.service'
 import { ProductDTO, UpdateProductDTO } from '~/dtos/product.dto'
-import { ApiOperation } from '@nestjs/swagger'
+import { ApiOperation, ApiQuery } from '@nestjs/swagger'
 
 @Controller('products')
 export class ProductsController {
@@ -11,6 +11,33 @@ export class ProductsController {
   @ApiOperation({ summary: 'Get all Products' })
   async findAll() {
     return this.productsService.findAll()
+  }
+
+  @Get('searchProduct')
+  @ApiQuery({ name: 'name', required: false })
+  @ApiQuery({ name: 'minPrice', required: false })
+  @ApiQuery({ name: 'maxPrice', required: false })
+  @ApiQuery({ name: 'minRating', required: false })
+  @ApiQuery({ name: 'maxRating', required: false })
+  @ApiQuery({ name: 'supplier', required: false })
+  async searchProduct(
+    @Query('name') name?: string,
+    @Query('minPrice') minPrice?: number,
+    @Query('maxPrice') maxPrice?: number,
+    @Query('minRating') minRating?: number,
+    @Query('maxRating') maxRating?: number,
+    @Query('supplier') supplier?: string
+  ) {
+    try {
+      return await this.productsService.SearchProduct(name, minPrice, maxPrice, minRating, maxRating, supplier)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error searching for products:', error.message)
+      } else {
+        console.error('An unknown error occurred')
+      }
+      throw new HttpException('Failed to search for products', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 
   @Get(':id')

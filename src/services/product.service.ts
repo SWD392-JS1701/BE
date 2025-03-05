@@ -17,8 +17,15 @@ export class ProductsService {
     return product
   }
 
-  async findByName(name: string): Promise<Product[]> {
-    return this.productRepository.findByName(name)
+  async SearchProduct(
+    name?: string,
+    minPrice?: number,
+    maxPrice?: number,
+    minRating?: number,
+    maxRating?: number,
+    supplier?: string
+  ): Promise<Product[]> {
+    return this.productRepository.searchProduct({ name, minPrice, maxPrice, minRating, maxRating, supplier })
   }
 
   async findByExactName(name: string): Promise<Product | null> {
