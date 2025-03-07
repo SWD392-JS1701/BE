@@ -21,7 +21,7 @@ export class Product {
   stock!: number
 
   @Prop()
-  product_type_id!: number
+  product_type_id!: string
 
   @Prop()
   image_url?: string
