@@ -21,6 +21,8 @@ export class AuthController {
     return this.authService.register(createUserDto)
   }
 
+  //reset password in profile
+  //seperate because token for this controller is different from change password controller ( this one using jwt but change password using custom token)
   @Post('reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
