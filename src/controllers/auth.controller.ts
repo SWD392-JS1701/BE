@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Put } from '@nestjs/common'
 import { AuthService } from '../services/auth.service'
 import { CreateUserDto, ForgotPasswordDto, LoginDto, ResetPasswordDto } from '../dtos/user.dto'
+import { RefreshTokenDto } from '../dtos/refresh-token.dto'
 import { ApiOperation } from '@nestjs/swagger'
 
 @Controller('auth')
@@ -41,5 +42,10 @@ export class AuthController {
       resetPasswordDto.newPassword,
       resetPasswordDto.token,
     );
+  }
+
+  @Post('refresh')
+  async refreshTokens(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authService.refreshTokens(refreshTokenDto.refreshToken);
   }
 }
