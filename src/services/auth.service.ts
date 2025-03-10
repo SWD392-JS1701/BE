@@ -10,7 +10,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model, Mongoose, Types } from "mongoose";
 import { nanoid } from "nanoid";
 import { UserRepository } from "~/repositories/user.repository";
-import { RefreshToken } from "~/models/refresh-token.model";
+import { RefreshToken, RefreshTokenModel } from "~/models/refresh-token.model";
 import { v4 as uuvid4 } from 'uuid';
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -25,7 +25,8 @@ export class AuthService {
     private readonly authRepository: AuthRepository, 
     private readonly jwtService: JwtService,
     @InjectModel('ResetToken') private readonly resetTokenModel: Model<ResetToken>, 
-    private readonly refreshTokenModel: Model<RefreshToken>
+    @InjectModel('RefreshToken') private readonly refreshTokenModel: Model<RefreshToken>, 
+    
 
   ) {}
 
