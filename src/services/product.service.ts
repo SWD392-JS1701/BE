@@ -1,11 +1,16 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common'
 import { ProductRepository } from '../repositories/product.repository'
+import { ProductTypeRepository } from '../repositories/productType.repository'
 import { ProductDTO, UpdateProductDTO } from '~/dtos/product.dto'
 import { Product } from '../models/product.model'
+import { Types } from 'mongoose'
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly productRepository: ProductRepository) {}
+  constructor(
+    private readonly productRepository: ProductRepository,
+    private readonly productTypeRepository: ProductTypeRepository
+  ) {}
 
   async findAll(): Promise<Product[]> {
     return this.productRepository.findAll()
@@ -17,8 +22,15 @@ export class ProductsService {
     return product
   }
 
-  async findByName(name: string): Promise<Product[]> {
-    return this.productRepository.findByName(name)
+  async SearchProduct(
+    name?: string,
+    minPrice?: number,
+    maxPrice?: number,
+    minRating?: number,
+    maxRating?: number,
+    supplier?: string
+  ): Promise<Product[]> {
+    return this.productRepository.searchProduct({ name, minPrice, maxPrice, minRating, maxRating, supplier })
   }
 
   async findByExactName(name: string): Promise<Product | null> {
@@ -28,6 +40,13 @@ export class ProductsService {
   async create(createProductDto: ProductDTO): Promise<Product> {
     const existingProduct = await this.findByExactName(createProductDto.name)
     if (existingProduct) throw new BadRequestException(`Product name already exists: ${createProductDto.name}`)
+
+    if (
+      !Types.ObjectId.isValid(createProductDto.product_type_id) ||
+      !(await this.productTypeRepository.findById(createProductDto.product_type_id))
+    ) {
+      throw new BadRequestException(`Invalid product type ID: ${createProductDto.product_type_id}`)
+    }
 
     return this.productRepository.create(createProductDto)
   }
@@ -39,6 +58,15 @@ export class ProductsService {
 
     if (Object.keys(filteredUpdate).length === 0) {
       throw new BadRequestException('No valid fields provided for update')
+    }
+
+    if (typeof filteredUpdate.product_type_id === 'string') {
+      if (
+        !Types.ObjectId.isValid(filteredUpdate.product_type_id) ||
+        !(await this.productTypeRepository.findById(filteredUpdate.product_type_id))
+      ) {
+        throw new BadRequestException(`Invalid product type ID: ${filteredUpdate.product_type_id}`)
+      }
     }
 
     const updatedProduct = await this.productRepository.update(id, filteredUpdate)

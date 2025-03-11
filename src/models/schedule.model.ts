@@ -21,9 +21,6 @@ export class Slot {
   @Prop({ type: String, default: null })
   doctorName?: string | null;
 
-  @Prop({ type: String, default: null })
-  specialization?: string | null;
-
   @Prop({ type: String, default: 'available' })
   status!: string;
 }

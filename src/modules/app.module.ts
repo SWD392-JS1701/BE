@@ -8,10 +8,12 @@ import { AuthModule } from './auth.module'
 import { UserModule } from './user.module'
 import { PromotionModule } from './promotion.module'
 import { DoctorModule } from './doctor.module'
+import { productTypesModule } from './productType.module'
 import { ScheduleModule } from './schedule.module'
 import { MembershipModule } from './membership.module'
 import { BlogModule } from './blog.module'
 import { FaqModule } from './faq.module'
+import { ComboModule } from './combo.module'
 
 @Module({
   imports: [
@@ -21,12 +23,14 @@ import { FaqModule } from './faq.module'
     AuthModule,
     UserModule,
     ProductsModule,
+    productTypesModule,
     PromotionModule,
     DoctorModule,
     ScheduleModule,
     MembershipModule,
     BlogModule,
     FaqModule,
+    ComboModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {

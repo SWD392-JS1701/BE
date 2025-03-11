@@ -1,24 +1,24 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { HydratedDocument } from 'mongoose'
 
-export type MembershipDocument = HydratedDocument<Membership>;
+export type MembershipDocument = HydratedDocument<Membership>
 
-@Schema({ timestamps: true }) 
+@Schema({ timestamps: true })
 export class Membership {
   @Prop({ type: String, required: true })
-  name!: string;
+  name!: string
 
   @Prop({ type: String })
-  description?: string;
+  description?: string
 
   @Prop({ type: Number, default: 0 })
-  discount_percentage!: number;
+  discount_percentage!: number
 
   @Prop({ type: Number, default: 0 })
-  point_value!: number;
+  point_value!: number
 
-  createdAt!: Date;
-  updatedAt!: Date;
+  createdAt!: Date
+  updatedAt!: Date
 }
 
-export const MembershipSchema = SchemaFactory.createForClass(Membership);
+export const MembershipSchema = SchemaFactory.createForClass(Membership)

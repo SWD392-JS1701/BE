@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, SetMetadata } from '@nestjs/common'
 import { UserService } from '../services/user.service'
 import { CreateUserDto, DeleteUserDto, UpdateUserDto } from '../dtos/user.dto'
 import { AuthGuard } from '../auth/auth.guard';
+import { RolesGuard } from '~/auth/role.guard';
 
 @Controller('users')
 export class UserController {
@@ -14,7 +15,8 @@ export class UserController {
   }
 
   /** Get all users */
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
+  @SetMetadata('roles', ['admin'])
   @Get()
   async getAllUsers() {
     return this.userService.getAllUsers()
@@ -29,14 +31,18 @@ export class UserController {
 
   /** Get user by username */
   @Get(':username')
+  @UseGuards(AuthGuard, RolesGuard)
+  @SetMetadata('roles', ['admin'])
   async getUserByUsername(@Param('username') username: string) {
-    return this.userService.getUserByUsername(username);
+    return this.userService.getUserByUsername(username)
   }
 
   /** Get user by email */
   @Get(':email')
+  @UseGuards(AuthGuard, RolesGuard)
+  @SetMetadata('roles', ['admin'])
   async getUserByEmail(@Param('email') email: string) {
-    return this.userService.getUserByEmail(email);
+    return this.userService.getUserByEmail(email)
   }
 
   /** Update user */
@@ -47,7 +53,7 @@ export class UserController {
 
   /** Delete user */
   @Delete(':id')
-  async deleteUser(@Param('id') id: string , @Body() deleteUserDto: DeleteUserDto) {
+  async deleteUser(@Param('id') id: string, @Body() deleteUserDto: DeleteUserDto) {
     return this.userService.updateUser(id, deleteUserDto)
   }
 }

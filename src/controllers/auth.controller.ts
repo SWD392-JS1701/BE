@@ -1,6 +1,6 @@
-import { Controller, Post, Body, Get, Req, UseGuards } from '@nestjs/common'
+import { Controller, Post, Body, Put } from '@nestjs/common'
 import { AuthService } from '../services/auth.service'
-import { CreateUserDto, LoginDto, ResetPasswordDto } from '../dtos/user.dto'
+import { CreateUserDto, ForgotPasswordDto, LoginDto, ResetPasswordDto } from '../dtos/user.dto'
 import { ApiOperation } from '@nestjs/swagger'
 
 @Controller('auth')
@@ -21,8 +21,25 @@ export class AuthController {
     return this.authService.register(createUserDto)
   }
 
+  //reset password in profile
+  //seperate because token for this controller is different from change password controller ( this one using jwt but change password using custom token)
   @Post('reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
+  }
+
+   @Post('forgot-password')
+   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto.email);
+  }
+
+  @Put('change-password')
+  async changePassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ) {
+    return this.authService.changePassword(
+      resetPasswordDto.newPassword,
+      resetPasswordDto.token,
+    );
   }
 }

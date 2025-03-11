@@ -33,11 +33,10 @@ export class ProductDTO {
   @Type(() => Number)
   stock!: number
 
-  @ApiProperty({ example: 1 })
-  @IsNumber()
-  @IsPositive()
-  @Type(() => Number)
-  product_type_id!: number
+  @ApiProperty({ example: '67ca5cb7d1a1bdbe8a78f712' })
+  @IsString()
+  @IsNotEmpty()
+  product_type_id!: string
 
   @ApiProperty({ example: 'https://example.com/image.jpg', required: false })
   @IsString()

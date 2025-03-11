@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Schedule, ScheduleDocument, Slot } from '../models/schedule.model';
+import { UpdateScheduleDto, UpdateSlotDto } from '~/dtos/schedule.dto';
 
 @Injectable()
 export class ScheduleRepository {
@@ -35,13 +36,24 @@ export class ScheduleRepository {
       : null;
   }
 
-  async update(id: string, schedule: Partial<Schedule>): Promise<ScheduleDocument | null> {
+  async update(id: string, updateData : UpdateScheduleDto): Promise<ScheduleDocument | null> {
     return this.scheduleModel
-      .findByIdAndUpdate(id, schedule, { new: true })
+      .findByIdAndUpdate(id, updateData, { new: true })
       .exec();
   }
 
-  async delete(id: string): Promise<ScheduleDocument | null> {
-    return this.scheduleModel.findByIdAndDelete(id).exec();
+  async updateSlot(scheduleId: string, slotId: string, updateData: UpdateSlotDto): Promise<Schedule> {
+    const schedule = await this.scheduleModel.findById(scheduleId);
+    if (!schedule) {
+      throw new NotFoundException(`Schedule with ID ${scheduleId} not found`);
+    }
+
+    const slot = schedule.slots.find(slot => slot.slotId === slotId);
+    if (!slot) {
+      throw new NotFoundException(`Slot with ID ${slotId} not found in schedule ${scheduleId}`);
+    }
+
+    Object.assign(slot, updateData);
+    return await schedule.save();
   }
 }
