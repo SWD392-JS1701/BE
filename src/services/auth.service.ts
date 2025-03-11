@@ -10,7 +10,8 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model, Mongoose, Types } from "mongoose";
 import { nanoid } from "nanoid";
 import { UserRepository } from "~/repositories/user.repository";
-import * as mongoose from 'mongoose';
+import { RefreshToken, RefreshTokenModel } from "~/models/refresh-token.model";
+import { v4 as uuvid4 } from 'uuid';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -24,10 +25,12 @@ export class AuthService {
     private readonly authRepository: AuthRepository, 
     private readonly jwtService: JwtService,
     @InjectModel('ResetToken') private readonly resetTokenModel: Model<ResetToken>, 
+    @InjectModel('RefreshToken') private readonly refreshTokenModel: Model<RefreshToken>, 
+    
 
   ) {}
 
-  async login(loginDto: LoginDto): Promise<{ access_token: string }> {
+  async login(loginDto: LoginDto) {
     const { email, password } = loginDto
     let user = await this.authRepository.findByEmailOrUsername(email)
 
@@ -41,12 +44,12 @@ export class AuthService {
     }
 
     const payload = { id: user._id, username: user.username, role: user.role }
-    const access_token = await this.jwtService.signAsync(payload, { secret: JWT_SECRET })
+    const tokens = await this.generateUserTokens(user._id);
 
-    return { access_token }
+    return { tokens }
   }
 
-  async register(createUserDto: CreateUserDto): Promise<{ message: string; access_token?: string }> {
+  async register(createUserDto: CreateUserDto){
     const { username, email, plainPassword, ...otherFields } = createUserDto
 
     const existingUser = await this.authRepository.findByEmailOrUsername(email)
@@ -61,9 +64,9 @@ export class AuthService {
     const createdUser = await this.authRepository.createUser({ username, email, password, role, ...otherFields })
 
     const payload = { id: createdUser._id, username: createdUser.username, role: createdUser.role }
-    const access_token = this.jwtService.sign(payload, { secret: JWT_SECRET })
+    const tokens = await this.generateUserTokens(createdUser._id);
 
-    return { message: 'Registration successful', access_token }
+    return { message: 'Registration successful', tokens }
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
@@ -124,5 +127,47 @@ export class AuthService {
 
     user.password = await bcrypt.hash(newPassword, 10);
     await this.userRepository.update(token.userId, user);
+  }
+
+  async refreshTokens(refreshToken: string) {
+    const token = await this.refreshTokenModel.findOne({
+      token: refreshToken,
+      expiryDate: { $gte: new Date() },
+    });
+  
+    if (!token) {
+      throw new UnauthorizedException('Refresh Token is invalid');
+    }
+    return this.generateUserTokens(token.userId);
+  }
+
+  async generateUserTokens(userId) {
+    let user = await this.authRepository.findById(userId)
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid email or username')
+    }
+    const payload = { id: user._id, username: user.username, role: user.role }
+    const access_token = await this.jwtService.signAsync(payload, { secret: JWT_SECRET })
+    const refreshToken = uuvid4();
+  
+    await this.storeRefreshToken(refreshToken, userId);
+    return {
+      access_token,
+      refreshToken,
+    };
+  }
+
+  async storeRefreshToken(token: string, userId: string) {
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 3);
+
+    await this.refreshTokenModel.updateOne(
+      { userId },
+      { $set: { expiryDate, token } },
+      {
+        upsert: true,
+      },
+    );
   }
 }

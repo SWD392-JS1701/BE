@@ -10,6 +10,7 @@ import * as dotenv from 'dotenv'
 import { AuthRepository } from '~/repositories/auth.repository'
 import { MailService } from '~/services/mail.service'
 import { ResetToken, ResetTokenModel } from '../models/reset-token.model';
+import { RefreshToken, RefreshTokenModel } from '~/models/refresh-token.model'
 import { UserRepository } from '~/repositories/user.repository'
 
 dotenv.config()
@@ -17,13 +18,14 @@ dotenv.config()
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema },
-      { name: ResetToken.name, schema: ResetTokenModel }
+      { name: ResetToken.name, schema: ResetTokenModel },
+      { name: RefreshToken.name, schema: RefreshTokenModel }
     ]),
     JwtModule.registerAsync({
       useFactory: async () => ({
         global: true,
         secret: process.env.JWT_SECRET,
-        signOptions: { expiresIn: '1h' }
+        signOptions: { expiresIn: '15m' }
       })
     }),
     UserModule
