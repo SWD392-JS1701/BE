@@ -9,6 +9,13 @@ import { UserModule } from './user.module'
 import { PromotionModule } from './promotion.module'
 import { DoctorModule } from './doctor.module'
 import { ScheduleModule } from './schedule.module'
+<<<<<<< Updated upstream
+=======
+import { MembershipModule } from './membership.module'
+import { ComboModule } from './combo.module'
+import { BlogModule } from './blog.module'
+import { FaqModule } from './faq.module'
+>>>>>>> Stashed changes
 
 @Module({
   imports: [
@@ -21,7 +28,14 @@ import { ScheduleModule } from './schedule.module'
     PromotionModule,
     DoctorModule,
     ScheduleModule,
+<<<<<<< Updated upstream
     
+=======
+    MembershipModule,
+    ComboModule,
+    BlogModule,
+    FaqModule,
+>>>>>>> Stashed changes
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
