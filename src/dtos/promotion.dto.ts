@@ -1,45 +1,34 @@
+import { ApiProperty, PartialType } from '@nestjs/swagger'
 import { IsString, IsOptional, IsNumber, IsDate, IsNotEmpty } from 'class-validator'
 
 export class CreatePromotionDto {
+  @ApiProperty({ example: 'Spring Skincare Sale - 20% Off!' })
   @IsString()
   @IsNotEmpty()
   title!: string
 
+  @ApiProperty({
+    example: 'Get glowing skin this spring! Enjoy 20% off on our best-selling skincare products.',
+    required: false
+  })
   @IsString()
   @IsOptional()
   description?: string
 
+  @ApiProperty({ example: '20' })
   @IsNumber()
   @IsNotEmpty()
   discount_percentage!: number
 
+  @ApiProperty({ example: '2025-10-30T23:59:59.999Z' })
   @IsDate()
   @IsNotEmpty()
   start_date!: Date
 
+  @ApiProperty({ example: '2025-12-31T23:59:59.999Z' })
   @IsDate()
   @IsNotEmpty()
   end_date!: Date
 }
 
-export class UpdatePromotionDto {
-  @IsString()
-  @IsOptional()
-  title?: string
-
-  @IsString()
-  @IsOptional()
-  description?: string
-
-  @IsNumber()
-  @IsOptional()
-  discount_percentage?: number
-
-  @IsDate()
-  @IsOptional()
-  start_date?: Date
-
-  @IsDate()
-  @IsOptional()
-  end_date?: Date
-}
+export class UpdatePromotionDto extends PartialType(CreatePromotionDto) {}

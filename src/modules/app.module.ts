@@ -12,6 +12,7 @@ import { productTypesModule } from './productType.module'
 import { ScheduleModule } from './schedule.module'
 import { MembershipModule } from './membership.module'
 import { ComboModule } from './combo.module'
+import { PromotedProductModule } from './promotedProduct.module'
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ComboModule } from './combo.module'
     ProductsModule,
     productTypesModule,
     PromotionModule,
+    PromotedProductModule,
     DoctorModule,
     ScheduleModule,
     MembershipModule,
