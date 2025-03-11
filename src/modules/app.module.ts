@@ -11,6 +11,8 @@ import { DoctorModule } from './doctor.module'
 import { productTypesModule } from './productType.module'
 import { ScheduleModule } from './schedule.module'
 import { MembershipModule } from './membership.module'
+import { BlogModule } from './blog.module'
+import { FaqModule } from './faq.module'
 import { ComboModule } from './combo.module'
 
 @Module({
@@ -26,6 +28,8 @@ import { ComboModule } from './combo.module'
     DoctorModule,
     ScheduleModule,
     MembershipModule,
+    BlogModule,
+    FaqModule,
     ComboModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
