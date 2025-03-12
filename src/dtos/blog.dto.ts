@@ -5,7 +5,7 @@ export class BlogDTO {
   @ApiProperty({ example: '60c72b2f9b1d4c3a2c8f9e2a' })
   @IsString()
   @IsNotEmpty()
-  staff_id!: string;
+  doctor_id!: string;
 
   @ApiProperty({ example: 'The Best Skincare Tips' })
   @IsString()
