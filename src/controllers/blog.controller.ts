@@ -9,7 +9,7 @@ import { Blog } from '../models/blog.model';
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
-  @Post()
+  @Post('blogcreate')
   @ApiOperation({ summary: 'Create a new blog post' })
   @ApiResponse({ status: 201, description: 'Blog post successfully created', type: Blog })
   async create(@Body() createBlogDto: BlogDTO): Promise<Blog> {
