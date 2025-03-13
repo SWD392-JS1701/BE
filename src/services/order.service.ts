@@ -23,9 +23,10 @@ export class OrderService {
     return order;
   }
 
-  async getOrdersByUserId(userId: string): Promise<Order[]> {
-    return this.orderRepository.findByUserId(userId);
-  }
+  async getOrdersByUserId(userId: string): Promise<{ orders: Order[], count: number }> {
+    const orders = await this.orderRepository.findByUserId(userId);
+    return { orders, count: orders.length };
+}
 
   async updateOrder(id: string, updateOrderDto: UpdateOrderDto): Promise<Order> {
     const updatedOrder = await this.orderRepository.update(id, updateOrderDto);

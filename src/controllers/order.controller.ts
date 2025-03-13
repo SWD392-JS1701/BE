@@ -23,10 +23,10 @@ export class OrderController {
   }
 
   @Get('user/:userId')
-  async findByUserId(@Param('userId') userId: string): Promise<Order[]> {
-    return this.orderService.getOrdersByUserId(userId);
+  async findByUserId(@Param('userId') userId: string): Promise<{ orders: Order[], count: number }> {
+      return this.orderService.getOrdersByUserId(userId);
   }
-
+  
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto): Promise<Order> {
     return this.orderService.updateOrder(id, updateOrderDto);
