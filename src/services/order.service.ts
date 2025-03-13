@@ -23,6 +23,10 @@ export class OrderService {
     return order;
   }
 
+  async getOrdersByUserId(userId: string): Promise<Order[]> {
+    return this.orderRepository.findByUserId(userId);
+  }
+
   async updateOrder(id: string, updateOrderDto: UpdateOrderDto): Promise<Order> {
     const updatedOrder = await this.orderRepository.update(id, updateOrderDto);
     if (!updatedOrder) {

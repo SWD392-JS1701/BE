@@ -20,6 +20,10 @@ export class OrderRepository {
     return this.orderModel.findById(id).exec();
   }
 
+  async findByUserId(userId: string): Promise<Order[]> {
+    return this.orderModel.find({ user_Id: userId }).exec();
+  }
+
   async update(id: string, orderData: Partial<Order>): Promise<Order | null> {
     return this.orderModel.findByIdAndUpdate(id, orderData, { new: true }).exec();
   }
