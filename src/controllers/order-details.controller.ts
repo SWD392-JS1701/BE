@@ -22,6 +22,11 @@ export class OrderDetailsController {
     return this.orderDetailsService.getOrderDetailsById(id);
   }
 
+  @Get('order/:orderId')
+  async findByOrderId(@Param('orderId') orderId: string): Promise<{ orderDetails: OrderDetails[] }> {
+    return this.orderDetailsService.getOrderDetailsByOrderId(orderId);
+  }
+
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateOrderDetailsDto: UpdateOrderDetailsDto): Promise<OrderDetails> {
     return this.orderDetailsService.updateOrderDetails(id, updateOrderDetailsDto);

@@ -23,6 +23,11 @@ export class OrderDetailsService {
     return orderDetails;
   }
 
+  async getOrderDetailsByOrderId(orderId: string): Promise<{ orderDetails: OrderDetails[] }> {
+    const orderDetails = await this.orderDetailsRepository.findByOrderId(orderId);
+    return { orderDetails };
+  }
+
   async updateOrderDetails(id: string, updateOrderDetailsDto: UpdateOrderDetailsDto): Promise<OrderDetails> {
     const updatedOrderDetails = await this.orderDetailsRepository.update(id, updateOrderDetailsDto);
     if (!updatedOrderDetails) {
