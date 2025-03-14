@@ -18,6 +18,7 @@ import { OrderModule } from './order.module'
 import { OrderDetailsModule } from './order-details.module'
 import { QuizModule } from './quiz.module'
 import { QuestionModule } from './question.module'
+import { BookingModule } from './booking.module'
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { QuestionModule } from './question.module'
     OrderDetailsModule,
     QuizModule,
     QuestionModule,
+    BookingModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
