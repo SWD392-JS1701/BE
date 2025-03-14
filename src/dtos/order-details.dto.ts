@@ -8,6 +8,11 @@ class ProductListDto {
   @IsString()
   product_Id!: string;
 
+  @ApiProperty({ example: 'Skin care', description: 'Product Name' })
+  @IsNotEmpty()
+  @IsString()
+  name!: string;
+
   @ApiProperty({ example: 3, description: 'Quantity of the product' })
   @IsNotEmpty()
   @IsNumber()
@@ -22,8 +27,8 @@ export class CreateOrderDetailsDto {
 
   @ApiProperty({
     example: [
-      { product_Id: '65fbe9d5e4b0f1c3a4567890', quantity: 3 },
-      { product_Id: '65fbe9d5e4b0f1c3a4567891', quantity: 2 }
+      { product_Id: '65fbe9d5e4b0f1c3a4567890', name: 'Skin care', quantity: 3 },
+      { product_Id: '65fbe9d5e4b0f1c3a4567891', name: 'Sun Cream', quantity: 2 }
     ],
     description: 'List of products with their quantities',
     type: [ProductListDto]
@@ -37,7 +42,7 @@ export class CreateOrderDetailsDto {
 export class UpdateOrderDetailsDto {
   @ApiProperty({
     example: [
-      { product_Id: '65fbe9d5e4b0f1c3a4567890', quantity: 5 }
+      { product_Id: '65fbe9d5e4b0f1c3a4567890', name: 'Skin care', quantity: 5 }
     ],
     description: 'Updated list of products with their quantities',
     type: [ProductListDto],
