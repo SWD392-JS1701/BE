@@ -7,6 +7,9 @@ export class ProductList {
   product_Id!: string; 
 
   @Prop({ required: true })
+  name!: string; 
+
+  @Prop({ required: true })
   quantity!: number;
 }
 
