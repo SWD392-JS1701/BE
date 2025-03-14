@@ -21,7 +21,7 @@ export class BlogService {
   async create(createBlogDto: BlogDTO): Promise<Blog> {
     return this.blogRepository.create({
       ...createBlogDto,
-      doctor_id: new Types.ObjectId(createBlogDto.doctor_id), // Convert to ObjectId
+      user_id: new Types.ObjectId(createBlogDto.user_id), // Convert to ObjectId
     });
   }
 

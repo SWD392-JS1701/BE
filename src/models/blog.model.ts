@@ -10,7 +10,7 @@ export type BlogDocument = HydratedDocument<Blog>;
 })
 export class Blog {
   @Prop({ type: Types.ObjectId, ref: User.name, required: true })
-  doctor_id!: Types.ObjectId | User;
+  user_id!: Types.ObjectId | User;
   
   @Prop({ required: true, maxlength: 255 })
   title!: string;
@@ -31,7 +31,7 @@ export const BlogSchema = SchemaFactory.createForClass(Blog);
 
 // Add virtual field for author
 BlogSchema.virtual('author').get(function(this: BlogDocument) {
-  const user = this.doctor_id as User;
+  const user = this.user_id as User;
   if (user && user.first_name && user.last_name) {
     return `${user.first_name} ${user.last_name}`.trim();
   }

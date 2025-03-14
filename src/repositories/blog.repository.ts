@@ -9,14 +9,14 @@ export class BlogRepository {
 
   async findAll(): Promise<Blog[]> {
     return this.blogModel.find()
-      .populate('doctor_id', 'first_name last_name')
+      .populate('user_id', 'first_name last_name')
       .exec();
   }
 
   async findById(id: string): Promise<Blog | null> {
     const objectId = new Types.ObjectId(id);
     return this.blogModel.findById(objectId)
-      .populate('doctor_id', 'first_name last_name')
+      .populate('user_id', 'first_name last_name')
       .exec();
   }
 
@@ -27,7 +27,7 @@ export class BlogRepository {
 
   async update(id: string, updateData: Partial<Blog>): Promise<Blog | null> {
     return this.blogModel.findByIdAndUpdate(id, { $set: updateData, updated_at: new Date() }, { new: true })
-      .populate('doctor_id', 'first_name last_name')
+      .populate('user_id', 'first_name last_name')
       .exec();
   }
 
