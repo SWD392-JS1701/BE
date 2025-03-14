@@ -1,33 +1,34 @@
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+  Injectable,
+  InternalServerErrorException
+} from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
+import { CreateUserDto, LoginDto, ResetPasswordDto } from '~/dtos/user.dto'
+import { AuthRepository } from '~/repositories/auth.repository'
+import * as bcrypt from 'bcrypt'
+import { MailService } from '~/services/mail.service'
+import { ResetToken, ResetTokenModel } from '~/models/reset-token.model'
+import { InjectModel } from '@nestjs/mongoose'
+import { Model, Mongoose, Types } from 'mongoose'
+import { nanoid } from 'nanoid'
+import { UserRepository } from '~/repositories/user.repository'
+import { RefreshToken, RefreshTokenModel } from '~/models/refresh-token.model'
+import { v4 as uuvid4 } from 'uuid'
 
-import { BadRequestException, NotFoundException, UnauthorizedException, Injectable, InternalServerErrorException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { CreateUserDto, LoginDto, ResetPasswordDto } from "~/dtos/user.dto";
-import { AuthRepository } from "~/repositories/auth.repository";
-import * as bcrypt from 'bcrypt';
-import { MailService } from "~/services/mail.service";
-import { ResetToken, ResetTokenModel } from "~/models/reset-token.model";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model, Mongoose, Types } from "mongoose";
-import { nanoid } from "nanoid";
-import { UserRepository } from "~/repositories/user.repository";
-import { RefreshToken, RefreshTokenModel } from "~/models/refresh-token.model";
-import { v4 as uuvid4 } from 'uuid';
-
-const JWT_SECRET = process.env.JWT_SECRET;
-
+const JWT_SECRET = process.env.JWT_SECRET
 
 @Injectable()
 export class AuthService {
   constructor(
-
     private readonly userRepository: UserRepository,
     private readonly mailService: MailService,
-    private readonly authRepository: AuthRepository, 
+    private readonly authRepository: AuthRepository,
     private readonly jwtService: JwtService,
-    @InjectModel('ResetToken') private readonly resetTokenModel: Model<ResetToken>, 
-    @InjectModel('RefreshToken') private readonly refreshTokenModel: Model<RefreshToken>, 
-    
-
+    @InjectModel('ResetToken') private readonly resetTokenModel: Model<ResetToken>,
+    @InjectModel('RefreshToken') private readonly refreshTokenModel: Model<RefreshToken>
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -44,12 +45,12 @@ export class AuthService {
     }
 
     const payload = { id: user._id, username: user.username, role: user.role }
-    const tokens = await this.generateUserTokens(user._id);
+    const tokens = await this.generateUserTokens(user._id)
 
     return { tokens }
   }
 
-  async register(createUserDto: CreateUserDto){
+  async register(createUserDto: CreateUserDto) {
     const { username, email, plainPassword, ...otherFields } = createUserDto
 
     const existingUser = await this.authRepository.findByEmailOrUsername(email)
@@ -64,7 +65,7 @@ export class AuthService {
     const createdUser = await this.authRepository.createUser({ username, email, password, role, ...otherFields })
 
     const payload = { id: createdUser._id, username: createdUser.username, role: createdUser.role }
-    const tokens = await this.generateUserTokens(createdUser._id);
+    const tokens = await this.generateUserTokens(createdUser._id)
 
     return { message: 'Registration successful', tokens }
   }
@@ -92,53 +93,53 @@ export class AuthService {
 
   async forgotPassword(email: string) {
     //Check that user exists
-    let user = await this.authRepository.findByEmailOrUsername(email);
+    let user = await this.authRepository.findByEmailOrUsername(email)
 
     if (user) {
-      const expiryDate = new Date();
-      expiryDate.setHours(expiryDate.getHours() + 1);
+      const expiryDate = new Date()
+      expiryDate.setHours(expiryDate.getHours() + 1)
 
-      const resetToken = nanoid(64);
+      const resetToken = nanoid(64)
       await this.resetTokenModel.create({
         token: resetToken,
         userId: user._id,
-        expiryDate,
-      });
+        expiryDate
+      })
       //Send the link to the user by email
-      this.mailService.sendPasswordResetEmail(email, resetToken);
+      this.mailService.sendPasswordResetEmail(email, resetToken)
     }
-    return { message: 'If this user exists, they will receive an email' };
+    return { message: 'If this user exists, they will receive an email' }
   }
 
   async changePassword(newPassword: string, resetToken: string) {
     const token = await this.resetTokenModel.findOneAndDelete({
       token: resetToken,
-      expiryDate: { $gte: new Date() },
-    });
+      expiryDate: { $gte: new Date() }
+    })
 
     if (!token) {
-      throw new UnauthorizedException('Invalid link');
+      throw new UnauthorizedException('Invalid link')
     }
 
-    const user = await this.userRepository.findById(token.userId);
+    const user = await this.userRepository.findById(token.userId)
     if (!user) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException()
     }
 
-    user.password = await bcrypt.hash(newPassword, 10);
-    await this.userRepository.update(token.userId, user);
+    user.password = await bcrypt.hash(newPassword, 10)
+    await this.userRepository.update(token.userId, user)
   }
 
   async refreshTokens(refreshToken: string) {
     const token = await this.refreshTokenModel.findOne({
       token: refreshToken,
-      expiryDate: { $gte: new Date() },
-    });
-  
+      expiryDate: { $gte: new Date() }
+    })
+
     if (!token) {
-      throw new UnauthorizedException('Refresh Token is invalid');
+      throw new UnauthorizedException('Refresh Token is invalid')
     }
-    return this.generateUserTokens(token.userId);
+    return this.generateUserTokens(token.userId)
   }
 
   async generateUserTokens(userId) {
@@ -149,25 +150,25 @@ export class AuthService {
     }
     const payload = { id: user._id, username: user.username, role: user.role }
     const access_token = await this.jwtService.signAsync(payload, { secret: JWT_SECRET })
-    const refreshToken = uuvid4();
-  
-    await this.storeRefreshToken(refreshToken, userId);
+    const refreshToken = uuvid4()
+
+    await this.storeRefreshToken(refreshToken, userId)
     return {
       access_token,
-      refreshToken,
-    };
+      refreshToken
+    }
   }
 
   async storeRefreshToken(token: string, userId: string) {
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + 3);
+    const expiryDate = new Date()
+    expiryDate.setDate(expiryDate.getDate() + 3)
 
     await this.refreshTokenModel.updateOne(
       { userId },
       { $set: { expiryDate, token } },
       {
-        upsert: true,
-      },
-    );
+        upsert: true
+      }
+    )
   }
 }
