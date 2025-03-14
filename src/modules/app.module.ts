@@ -14,6 +14,8 @@ import { MembershipModule } from './membership.module'
 import { BlogModule } from './blog.module'
 import { FaqModule } from './faq.module'
 import { ComboModule } from './combo.module'
+import { OrderModule } from './order.module'
+import { OrderDetailsModule } from './order-details.module'
 import { QuizModule } from './quiz.module'
 import { QuestionModule } from './question.module'
 
@@ -33,6 +35,8 @@ import { QuestionModule } from './question.module'
     BlogModule,
     FaqModule,
     ComboModule,
+    OrderModule,
+    OrderDetailsModule,
     QuizModule,
     QuestionModule,
     MongooseModule.forRootAsync({
