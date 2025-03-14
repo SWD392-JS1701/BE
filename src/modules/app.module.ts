@@ -14,6 +14,8 @@ import { MembershipModule } from './membership.module'
 import { BlogModule } from './blog.module'
 import { FaqModule } from './faq.module'
 import { ComboModule } from './combo.module'
+import { QuizModule } from './quiz.module'
+import { QuestionModule } from './question.module'
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { ComboModule } from './combo.module'
     BlogModule,
     FaqModule,
     ComboModule,
+    QuizModule,
+    QuestionModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
