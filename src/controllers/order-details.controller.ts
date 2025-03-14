@@ -9,6 +9,7 @@ export class OrderDetailsController {
 
   @Post()
   async create(@Body() createOrderDetailsDto: CreateOrderDetailsDto): Promise<OrderDetails> {
+    console.log(createOrderDetailsDto);
     return this.orderDetailsService.createOrderDetails(createOrderDetailsDto);
   }
 
