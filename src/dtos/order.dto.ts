@@ -7,6 +7,21 @@ export class CreateOrderDto {
   @IsString()
   user_Id!: string;
 
+  @ApiProperty({ example: 'John Doe', description: 'Full name of the user for delivery' })
+  @IsNotEmpty()
+  @IsString()
+  user_fullname!: string;
+
+  @ApiProperty({ example: '+84123456789', description: 'Contact telephone number' })
+  @IsNotEmpty()
+  @IsString()
+  user_telephone!: string;
+
+  @ApiProperty({ example: '123 Main St, City, Country', description: 'Delivery address' })
+  @IsNotEmpty()
+  @IsString()
+  user_address!: string;
+
   @ApiProperty({ example: 150.75, description: 'Total amount of the order', required: false })
   @IsOptional()
   @IsNumber()
@@ -14,6 +29,21 @@ export class CreateOrderDto {
 }
 
 export class UpdateOrderDto {
+  @ApiProperty({ example: 'John Doe', description: 'Updated full name', required: false })
+  @IsOptional()
+  @IsString()
+  user_fullname?: string;
+
+  @ApiProperty({ example: '+84123456789', description: 'Updated telephone number', required: false })
+  @IsOptional()
+  @IsString()
+  user_telephone?: string;
+
+  @ApiProperty({ example: '123 Main St, City, Country', description: 'Updated delivery address', required: false })
+  @IsOptional()
+  @IsString()
+  user_address?: string;
+
   @ApiProperty({ example: 200.50, description: 'Updated order amount', required: false })
   @IsOptional()
   @IsNumber()
