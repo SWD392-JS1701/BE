@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsString, IsDate } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreateBookingDto {
   @ApiProperty({ example: 'b123', description: 'Unique booking ID' })
@@ -22,8 +23,9 @@ export class CreateBookingDto {
   @IsNotEmpty()
   combo_id!: string;
 
-  @ApiProperty({ example: '2024-03-14T10:00:00.000Z', description: 'Booking Time' })
+  @ApiProperty({ example: '2024-03-19T10:00:00.000Z', description: 'Booking Time' })
   @IsDate()
+  @Transform(({ value }) => new Date(value))
   @IsNotEmpty()
   booking_time!: Date;
 }
