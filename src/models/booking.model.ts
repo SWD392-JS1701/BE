@@ -5,9 +5,6 @@ export type BookingDocument = Booking & Document;
 
 @Schema({ timestamps: true })
 export class Booking {
-  @Prop({ required: true, unique: true })
-  booking_id!: string;
-
   @Prop({ required: true })
   user_id!: string;
 
