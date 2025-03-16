@@ -1,44 +1,49 @@
-import { Controller, Post, Get, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { BookingService } from '../services/booking.service';
 import { CreateBookingDto, UpdateBookingDto } from '../dtos/booking.dto';
 import { Booking } from '../models/booking.model';
-import { ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger';
 
-@ApiTags('Booking')
+@ApiTags('Bookings')
 @Controller('bookings')
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new booking' })
-  async create(@Body() dto: CreateBookingDto): Promise<Booking> {
-    return this.bookingService.createBooking(dto);
+  @ApiResponse({ status: 201, description: 'Booking successfully created', type: Booking })
+  async create(@Body() createBookingDto: CreateBookingDto) {
+    return this.bookingService.create(createBookingDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all bookings' })
+  @ApiResponse({ status: 200, description: 'List of all bookings', type: [Booking] })
   async findAll(): Promise<Booking[]> {
-    return this.bookingService.getAllBookings();
+    return this.bookingService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get booking by ID' })
-  @ApiParam({ name: 'id', example: 'b123' })
+  @ApiOperation({ summary: 'Get a booking by ID' })
+  @ApiResponse({ status: 200, description: 'Booking found', type: Booking })
+  @ApiResponse({ status: 404, description: 'Booking not found' })
   async findOne(@Param('id') id: string): Promise<Booking> {
-    return this.bookingService.getBookingById(id);
+    return this.bookingService.findById(id);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update a booking' })
-  @ApiParam({ name: 'id', example: 'b123' })
-  async update(@Param('id') id: string, @Body() dto: UpdateBookingDto): Promise<Booking> {
-    return this.bookingService.updateBooking(id, dto);
+  @ApiOperation({ summary: 'Update a booking by ID' })
+  @ApiResponse({ status: 200, description: 'Booking updated successfully', type: Booking })
+  @ApiResponse({ status: 404, description: 'Booking not found' })
+  async update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto): Promise<Booking> {
+    return this.bookingService.update(id, updateBookingDto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a booking' })
-  @ApiParam({ name: 'id', example: 'b123' })
-  async remove(@Param('id') id: string): Promise<void> {
-    return this.bookingService.deleteBooking(id);
+  @ApiOperation({ summary: 'Delete a booking by ID' })
+  @ApiResponse({ status: 200, description: 'Booking deleted successfully' })
+  @ApiResponse({ status: 404, description: 'Booking not found' })
+  async delete(@Param('id') id: string) {
+    await this.bookingService.delete(id);
   }
 }
