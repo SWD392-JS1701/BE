@@ -1,8 +1,9 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { CreatePromotedProductDto } from '~/dtos/promotedProduct.dto'
 import { PromotedProduct, PromotedProductDocument } from '~/models/promotedProduct.model'
+import { Promotion } from '~/models/promotion.model'
 import { ProductRepository } from '~/repositories/product.repository'
 import { PromotionRepository } from '~/repositories/promotion.repository'
 
@@ -69,5 +70,28 @@ export class PromotedProductRepository {
 
   async delete(id: string): Promise<PromotedProduct | null> {
     return this.promotedProductModel.findByIdAndDelete(id).exec()
+  }
+
+  async findPromotionByProductId(productId: string): Promise<Promotion | null> {
+    if (!Types.ObjectId.isValid(productId)) {
+      throw new HttpException('Invalid product ID format', HttpStatus.BAD_REQUEST)
+    }
+
+    const productPromo = await this.promotedProductModel
+      .findOne({ product_id: new Types.ObjectId(productId) })
+      .populate('promotion_id') // Populate promotion details
+      .exec()
+
+    if (!productPromo || !productPromo.promotion_id) {
+      throw new HttpException('Promotion not found for this product', HttpStatus.NOT_FOUND)
+    }
+
+    const promoData = await this.promotionRepository.findById(productPromo.promotion_id)
+
+    if (!promoData) {
+      throw new HttpException('Promotion not found for this product', HttpStatus.NOT_FOUND)
+    }
+
+    return promoData
   }
 }

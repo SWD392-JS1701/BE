@@ -2,30 +2,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
 import { Product, ProductDocument } from '../models/product.model'
-import { GridFSBucket } from 'mongodb'
 
 @Injectable()
 export class ProductRepository {
-  // private bucket: GridFSBucket
-
-  constructor(@InjectModel(Product.name) private readonly productModel: Model<ProductDocument>) {
-    // const db = getDb()
-    // this.bucket = new GridFSBucket(db, { bucketName: 'productFiles' })
-  }
-
-  // async uploadFile(file: Express.Multer.File): Promise<string> {
-  //   if (!file) {
-  //     throw new HttpException('No file provided', HttpStatus.BAD_REQUEST)
-  //   }
-
-  //   const uploadStream = this.bucket.openUploadStream(file.originalname)
-  //   uploadStream.end(file.buffer)
-
-  //   return new Promise((resolve, reject) => {
-  //     uploadStream.on('finish', () => resolve(uploadStream.id.toString()))
-  //     uploadStream.on('error', () => reject(new HttpException('File upload failed', HttpStatus.INTERNAL_SERVER_ERROR)))
-  //   })
-  // }
+  constructor(@InjectModel(Product.name) private readonly productModel: Model<ProductDocument>) {}
 
   async findAll(): Promise<Product[]> {
     return this.productModel.find().exec()
