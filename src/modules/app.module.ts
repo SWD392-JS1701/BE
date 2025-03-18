@@ -14,6 +14,11 @@ import { MembershipModule } from './membership.module'
 import { BlogModule } from './blog.module'
 import { FaqModule } from './faq.module'
 import { ComboModule } from './combo.module'
+import { OrderModule } from './order.module'
+import { OrderDetailsModule } from './order-details.module'
+import { QuizModule } from './quiz.module'
+import { QuestionModule } from './question.module'
+import { BookingModule } from './booking.module'
 import { PromotedProductModule } from './promotedProduct.module'
 
 @Module({
@@ -33,6 +38,11 @@ import { PromotedProductModule } from './promotedProduct.module'
     BlogModule,
     FaqModule,
     ComboModule,
+    OrderModule,
+    OrderDetailsModule,
+    QuizModule,
+    QuestionModule,
+    BookingModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {

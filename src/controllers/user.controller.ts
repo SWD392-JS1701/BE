@@ -16,7 +16,7 @@ export class UserController {
 
   /** Get all users */
   @UseGuards(AuthGuard, RolesGuard)
-  @SetMetadata('roles', ['admin'])
+  @SetMetadata('roles', ['Admin'])
   @Get()
   async getAllUsers() {
     return this.userService.getAllUsers()
@@ -32,7 +32,7 @@ export class UserController {
   /** Get user by username */
   @Get(':username')
   @UseGuards(AuthGuard, RolesGuard)
-  @SetMetadata('roles', ['admin'])
+  @SetMetadata('roles', ['Admin'])
   async getUserByUsername(@Param('username') username: string) {
     return this.userService.getUserByUsername(username)
   }
@@ -40,7 +40,7 @@ export class UserController {
   /** Get user by email */
   @Get(':email')
   @UseGuards(AuthGuard, RolesGuard)
-  @SetMetadata('roles', ['admin'])
+  @SetMetadata('roles', ['Admin'])
   async getUserByEmail(@Param('email') email: string) {
     return this.userService.getUserByEmail(email)
   }
