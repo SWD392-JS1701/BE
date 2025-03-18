@@ -16,6 +16,12 @@ export class Booking {
 
   @Prop({ required: true })
   booking_time!: Date;
+
+  @Prop({required: true})
+  booking_date!: string;
+
+  @Prop({ required: true })
+  dayofweek!: string;
 }
 
 export const BookingSchema = SchemaFactory.createForClass(Booking);
