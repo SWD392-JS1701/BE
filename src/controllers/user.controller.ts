@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, SetMetadata } from '@nestjs/common'
 import { UserService } from '../services/user.service'
 import { CreateUserDto, DeleteUserDto, UpdateUserDto } from '../dtos/user.dto'
-import { AuthGuard } from '../auth/auth.guard';
-import { RolesGuard } from '~/auth/role.guard';
+import { AuthGuard } from '../auth/auth.guard'
+import { RolesGuard } from '~/auth/role.guard'
 
 @Controller('users')
 export class UserController {
