@@ -7,6 +7,11 @@ export class CreateDoctorDto {
   @IsNotEmpty()
   user_Id!: string
 
+  @ApiProperty({ example: 'Alex', description: 'Doctor Name' })
+  @IsString()
+  @IsNotEmpty()
+  name!: string
+
   @ApiProperty({ example: 'MBBS, MD', description: 'Doctor certification' })
   @IsString()
   @IsNotEmpty()
@@ -33,6 +38,11 @@ export class UpdateDoctorDto {
   @IsString()
   @IsOptional()
   user_Id?: string
+
+  @ApiProperty({ example: 'Alex', description: 'Doctor Name' })
+  @IsString()
+  @IsNotEmpty()
+  name?: string
 
   @ApiPropertyOptional({ example: 'MBBS, MD', description: 'Doctor certification' })
   @IsString()
