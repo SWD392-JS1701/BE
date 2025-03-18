@@ -11,6 +11,13 @@ export class PromotedProductService {
     return this.promotedProductRepository.create(createPromotedProductDto)
   }
 
+  async update(
+    promotedProductId: string,
+    updatedPromotedProductDto: Partial<CreatePromotedProductDto>
+  ): Promise<PromotedProduct | null> {
+    return this.promotedProductRepository.update(promotedProductId, updatedPromotedProductDto)
+  }
+
   async findAll(): Promise<PromotedProduct[]> {
     return this.promotedProductRepository.findAll()
   }

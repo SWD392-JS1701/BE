@@ -131,15 +131,15 @@ export class LoginDto {
 export class ResetPasswordDto {
   @IsOptional()
   @IsString()
-  token!: string;
+  token!: string
 
   @IsOptional()
   @IsString()
-  newPassword!: string;
+  newPassword!: string
 }
 
 export class ForgotPasswordDto {
   @ApiProperty({ example: 'abc@gmail.com' })
   @IsEmail()
-  email!: string;
+  email!: string
 }

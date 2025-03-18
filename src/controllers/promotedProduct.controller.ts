@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common'
 import { CreatePromotedProductDto } from '~/dtos/promotedProduct.dto'
 import { PromotedProductService } from '~/services/promotedProduct.service'
 
@@ -9,6 +9,11 @@ export class PromotedProductController {
   @Post()
   create(@Body() createPromotedProductDto: CreatePromotedProductDto) {
     return this.promotedProductService.create(createPromotedProductDto)
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updatedPromotedProductDto: Partial<CreatePromotedProductDto>) {
+    return this.promotedProductService.update(id, updatedPromotedProductDto)
   }
 
   @Get()

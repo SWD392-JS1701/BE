@@ -19,6 +19,7 @@ import { OrderDetailsModule } from './order-details.module'
 import { QuizModule } from './quiz.module'
 import { QuestionModule } from './question.module'
 import { BookingModule } from './booking.module'
+import { PromotedProductModule } from './promotedProduct.module'
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { BookingModule } from './booking.module'
     ProductsModule,
     productTypesModule,
     PromotionModule,
+    PromotedProductModule,
     DoctorModule,
     ScheduleModule,
     MembershipModule,
