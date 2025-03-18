@@ -1,11 +1,14 @@
-import { IsNotEmpty, IsNumber } from 'class-validator'
+import { ApiProperty } from '@nestjs/swagger'
+import { IsNotEmpty, IsString } from 'class-validator'
 
 export class CreatePromotedProductDto {
-  @IsNumber()
+  @ApiProperty({ example: '67ca5cb7d1a1bdbe8a78f712' })
+  @IsString()
   @IsNotEmpty()
-  promotion_id!: number
+  promotion_id!: string
 
-  @IsNumber()
+  @ApiProperty({ example: '67ca5cb7d1a1bdbe8a78f712' })
+  @IsString()
   @IsNotEmpty()
-  product_id!: number
+  product_id!: string
 }

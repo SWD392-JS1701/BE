@@ -6,9 +6,7 @@ import { ApiOperation } from '@nestjs/swagger'
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   @ApiOperation({ summary: 'User Login' })
@@ -26,26 +24,21 @@ export class AuthController {
   //seperate because token for this controller is different from change password controller ( this one using jwt but change password using custom token)
   @Post('reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    return this.authService.resetPassword(resetPasswordDto);
+    return this.authService.resetPassword(resetPasswordDto)
   }
 
-   @Post('forgot-password')
-   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(forgotPasswordDto.email);
+  @Post('forgot-password')
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto.email)
   }
 
   @Put('change-password')
-  async changePassword(
-    @Body() resetPasswordDto: ResetPasswordDto,
-  ) {
-    return this.authService.changePassword(
-      resetPasswordDto.newPassword,
-      resetPasswordDto.token,
-    );
+  async changePassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.changePassword(resetPasswordDto.newPassword, resetPasswordDto.token)
   }
 
   @Post('refresh')
   async refreshTokens(@Body() refreshTokenDto: RefreshTokenDto) {
-    return this.authService.refreshTokens(refreshTokenDto.refreshToken);
+    return this.authService.refreshTokens(refreshTokenDto.refreshToken)
   }
 }
