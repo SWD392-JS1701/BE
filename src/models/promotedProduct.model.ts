@@ -4,10 +4,10 @@ import { Document } from 'mongoose'
 @Schema()
 export class PromotedProduct {
   @Prop({ required: true })
-  promotion_id!: number
+  promotion_id!: string
 
   @Prop({ required: true })
-  product_id!: number
+  product_id!: string
 }
 
 export type PromotedProductDocument = PromotedProduct & Document
