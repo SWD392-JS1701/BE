@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { PromotedProductRepository } from '../repositories/promotedProduct.repository'
 import { CreatePromotedProductDto } from '~/dtos/promotedProduct.dto'
 import { PromotedProduct } from '~/models/promotedProduct.model'
+import { Promotion } from '~/models/promotion.model'
 
 @Injectable()
 export class PromotedProductService {
@@ -36,5 +37,9 @@ export class PromotedProductService {
       throw new NotFoundException(`Promoted product with ID ${id} not found`)
     }
     return removedPromotedProduct
+  }
+
+  async findPromotionByProductId(productId: string): Promise<Promotion | null> {
+    return this.promotedProductRepository.findPromotionByProductId(productId)
   }
 }
