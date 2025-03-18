@@ -56,7 +56,12 @@ export class ScheduleRepository {
     const matchingSlots: Slot[] = []
 
     for (const schedule of schedules) {
-      const slots = schedule.slots.filter((slot) => slot.doctorId === doctorId)
+      const slots = schedule.slots
+        .filter((slot) => slot.doctorId === doctorId)
+        .map((slot) => ({
+          ...JSON.parse(JSON.stringify(slot)),
+          dayOfWeek: schedule.dayOfWeek
+        }))
       matchingSlots.push(...slots)
     }
 
