@@ -1,4 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger'
+import { Type } from 'class-transformer'
 import { IsString, IsOptional, IsNumber, IsDate, IsNotEmpty } from 'class-validator'
 
 export class CreatePromotionDto {
@@ -21,11 +22,13 @@ export class CreatePromotionDto {
   discount_percentage!: number
 
   @ApiProperty({ example: '2025-10-30T23:59:59.999Z' })
+  @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
   start_date!: Date
 
   @ApiProperty({ example: '2025-12-31T23:59:59.999Z' })
+  @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
   end_date!: Date
