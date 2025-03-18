@@ -27,8 +27,8 @@ export class PromotedProductController {
   }
 
   @Get('/product/:productId')
-  async findPromotionByProductId(@Param('productId') productId: string) {
-    return this.promotedProductService.findPromotionByProductId(productId)
+  async findPromotionsByProductId(@Param('productId') productId: string) {
+    return this.promotedProductService.findPromotionsByProductId(productId)
   }
 
   @Delete(':id')

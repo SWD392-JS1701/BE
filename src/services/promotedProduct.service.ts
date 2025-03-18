@@ -39,7 +39,7 @@ export class PromotedProductService {
     return removedPromotedProduct
   }
 
-  async findPromotionByProductId(productId: string): Promise<Promotion | null> {
-    return this.promotedProductRepository.findPromotionByProductId(productId)
+  async findPromotionsByProductId(productId: string): Promise<Promotion[]> {
+    return this.promotedProductRepository.findPromotionsByProductId(productId)
   }
 }
