@@ -25,6 +25,10 @@ export class BookingRepository {
     return this.bookingModel.findByIdAndUpdate(id, updateData, { new: true }).exec();
   }
 
+  async updateStatus(id: string, status: string): Promise<Booking | null> {
+    return this.bookingModel.findByIdAndUpdate(id, { status }, { new: true }).exec();
+  }
+
   async delete(id: string): Promise<void> {
     await this.bookingModel.findByIdAndDelete(id).exec();
   }

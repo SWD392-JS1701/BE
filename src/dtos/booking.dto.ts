@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsDate } from 'class-validator';
+import { IsNotEmpty, IsString, IsDate, IsOptional, IsIn } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
@@ -33,6 +33,12 @@ export class CreateBookingDto {
   @IsString()
   @IsNotEmpty()
   dayofweek!: string;
+
+  @ApiProperty({ example: 'Pending', description: 'Booking status', enum: ['Pending', 'Confirmed', 'Cancelled'] })
+  @IsString()
+  @IsIn(['Pending', 'Confirmed', 'Cancelled'])
+  @IsOptional()
+  status?: string;
 }
 
 export class UpdateBookingDto {
@@ -47,4 +53,10 @@ export class UpdateBookingDto {
   @ApiProperty({ example: 'Tuesday', description: 'Updated Day of the week' })
   @IsString()
   dayofweek?: string;
+
+  @ApiProperty({ example: 'Confirmed', description: 'Updated Booking Status', enum: ['Pending', 'Confirmed', 'Cancelled'] })
+  @IsString()
+  @IsIn(['Pending', 'Confirmed', 'Cancelled'])
+  @IsOptional()
+  status?: string;
 }

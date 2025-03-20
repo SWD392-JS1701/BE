@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Patch } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { BookingService } from '../services/booking.service';
 import { CreateBookingDto, UpdateBookingDto } from '../dtos/booking.dto';
@@ -45,5 +45,11 @@ export class BookingController {
   @ApiResponse({ status: 404, description: 'Booking not found' })
   async delete(@Param('id') id: string) {
     await this.bookingService.delete(id);
+  }
+
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Update booking status' })
+  async updateStatus(@Param('id') id: string, @Body() body: { status: string }): Promise<Booking> {
+    return this.bookingService.updateStatus(id, body.status);
   }
 }
