@@ -10,6 +10,9 @@ export class Quiz {
 
   @Prop({ required: true, maxlength: 200 })
   quiz_Name!: string;
+
+  @Prop({ required: true, default: 0 })
+  point!: number;
 }
 
 export const QuizSchema = SchemaFactory.createForClass(Quiz);

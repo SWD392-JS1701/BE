@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateQuizDto {
@@ -7,16 +7,25 @@ export class CreateQuizDto {
   @IsNotEmpty()
   quiz_ID!: string;
 
-  @ApiProperty({ example: 'Math Quiz', description: 'Name of the quiz' })
+  @ApiProperty({ example: 'Math Quiz', description: 'Quiz name' })
   @IsString()
   @IsNotEmpty()
-  @MaxLength(200)
   quiz_Name!: string;
+
+  @ApiProperty({ example: 10, description: 'Quiz point value' })
+  @IsNumber()
+  @Min(0)
+  point!: number;
 }
 
 export class UpdateQuizDto {
-  @ApiProperty({ example: 'Math Quiz Updated', description: 'Updated name of the quiz' })
+  @ApiProperty({ example: 'Science Quiz', description: 'Updated quiz name' })
   @IsString()
-  @MaxLength(200)
+  @IsNotEmpty()
   quiz_Name?: string;
+
+  @ApiProperty({ example: 15, description: 'Updated quiz point value' })
+  @IsNumber()
+  @Min(0)
+  point?: number;
 }
