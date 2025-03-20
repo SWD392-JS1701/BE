@@ -37,4 +37,9 @@ export class DoctorRepository {
 
     await this.doctorModel.updateOne({ _id: objectId }, { $set: { status: 0 } })
   }
+
+  /* Get a doctor by user_id */
+  async findByUserId(userId: string): Promise<Doctor | null> {
+    return this.doctorModel.findOne({ user_Id: userId }).exec()
+  }
 }

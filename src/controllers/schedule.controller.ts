@@ -45,4 +45,9 @@ export class ScheduleController {
   async getSlotsByDoctorId(@Param('doctorId') doctorId: string): Promise<Slot[]> {
     return this.scheduleService.getSlotsByDoctorId(doctorId)
   }
+
+  @Get('doctor/:doctorId/schedules')
+  async getSchedulesByDoctorId(@Param('doctorId') doctorId: string): Promise<ScheduleDocument[]> {
+    return this.scheduleService.getSchedulesByDoctorId(doctorId)
+  }
 }

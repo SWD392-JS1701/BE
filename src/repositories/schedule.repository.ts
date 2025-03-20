@@ -46,20 +46,33 @@ export class ScheduleRepository {
     return await schedule.save()
   }
 
-  async findAllSlotsByDoctorId(doctorId: string): Promise<Slot[]> {
+  async findAllSlotsByDoctorId(doctorId: string): Promise<(Slot & { dayOfWeek: string })[]> {
     const schedules = await this.scheduleModel
       .find({
         'slots.doctorId': doctorId
       })
       .exec()
 
-    const matchingSlots: Slot[] = []
+    const matchingSlots: (Slot & { dayOfWeek: string })[] = []
 
     for (const schedule of schedules) {
-      const slots = schedule.slots.filter((slot) => slot.doctorId === doctorId)
+      const slots = schedule.slots
+        .filter((slot) => slot.doctorId === doctorId)
+        .map(slot => ({
+          ...JSON.parse(JSON.stringify(slot)),
+          dayOfWeek: schedule.dayOfWeek
+        }))
       matchingSlots.push(...slots)
     }
 
     return matchingSlots
+  }
+
+  async findSchedulesByDoctorId(doctorId: string): Promise<ScheduleDocument[]> {
+    return this.scheduleModel
+      .find({
+        'slots.doctorId': doctorId
+      })
+      .exec()
   }
 }
