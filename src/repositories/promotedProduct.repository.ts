@@ -72,26 +72,27 @@ export class PromotedProductRepository {
     return this.promotedProductModel.findByIdAndDelete(id).exec()
   }
 
-  async findPromotionByProductId(productId: string): Promise<Promotion | null> {
+  async findPromotionsByProductId(productId: string): Promise<Promotion[]> {
     if (!Types.ObjectId.isValid(productId)) {
       throw new HttpException('Invalid product ID format', HttpStatus.BAD_REQUEST)
     }
 
-    const productPromo = await this.promotedProductModel
-      .findOne({ product_id: new Types.ObjectId(productId) })
+    const productPromos = await this.promotedProductModel
+      .find({ product_id: new Types.ObjectId(productId) }) // Find all matching promotions
       .populate('promotion_id') // Populate promotion details
       .exec()
 
-    if (!productPromo || !productPromo.promotion_id) {
-      throw new HttpException('Promotion not found for this product', HttpStatus.NOT_FOUND)
+    if (!productPromos || productPromos.length === 0) {
+      throw new HttpException('No promotions found for this product', HttpStatus.NOT_FOUND)
     }
 
-    const promoData = await this.promotionRepository.findById(productPromo.promotion_id)
+    // Extract and return only the populated promotions
+    const promoList = await Promise.all(
+      productPromos.map(async (productPromo) => {
+        return this.promotionRepository.findById(productPromo.promotion_id)
+      })
+    )
 
-    if (!promoData) {
-      throw new HttpException('Promotion not found for this product', HttpStatus.NOT_FOUND)
-    }
-
-    return promoData
+    return promoList.filter((promo) => promo !== null)
   }
 }
