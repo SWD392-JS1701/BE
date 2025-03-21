@@ -38,4 +38,11 @@ export class DoctorService {
   async deleteDoctor(id: string): Promise<void> {
     await this.doctorRepository.delete(id)
   }
+
+  /* Get a doctor by user_id */
+  async getDoctorByUserId(userId: string): Promise<Doctor> {
+    const doctor = await this.doctorRepository.findByUserId(userId)
+    if (!doctor) throw new NotFoundException('Doctor not found')
+    return doctor
+  }
 }

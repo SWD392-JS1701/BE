@@ -61,6 +61,11 @@ export class UpdateSlotDto {
   @IsString()
   doctorName?: string;
 
+  @ApiPropertyOptional({ example: "Cardiology", description: "Doctor's specialization" })
+  @IsOptional()
+  @IsString()
+  specialization?: string;
+
   @ApiPropertyOptional({
     example: "booked",
     description: "Status of the slot (must be 'available', 'booked', or 'cancelled')",

@@ -23,6 +23,14 @@ export class DoctorController {
     return this.doctorService.getAllDoctors()
   }
 
+  @Get('user/:userId')
+  @ApiOperation({ summary: 'Get a doctor by user ID' })
+  @ApiResponse({ status: 200, description: 'Doctor found', type: Doctor })
+  @ApiResponse({ status: 404, description: 'Doctor not found' })
+  async findByUserId(@Param('userId') userId: string): Promise<Doctor> {
+    return this.doctorService.getDoctorByUserId(userId)
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a doctor by ID' })
   @ApiResponse({ status: 200, description: 'Doctor found', type: Doctor })

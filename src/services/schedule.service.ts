@@ -46,4 +46,8 @@ export class ScheduleService {
   async getSlotsByDoctorId(doctorId: string): Promise<Slot[]> {
     return this.scheduleRepository.findAllSlotsByDoctorId(doctorId)
   }
+
+  async getSchedulesByDoctorId(doctorId: string): Promise<ScheduleDocument[]> {
+    return this.scheduleRepository.findSchedulesByDoctorId(doctorId)
+  }
 }
