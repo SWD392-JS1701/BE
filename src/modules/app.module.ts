@@ -20,6 +20,7 @@ import { QuizModule } from './quiz.module'
 import { QuestionModule } from './question.module'
 import { BookingModule } from './booking.module'
 import { PromotedProductModule } from './promotedProduct.module'
+import { RatingModule } from './rating.module'
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { PromotedProductModule } from './promotedProduct.module'
     UserModule,
     ProductsModule,
     productTypesModule,
+    RatingModule,
     PromotionModule,
     PromotedProductModule,
     DoctorModule,
