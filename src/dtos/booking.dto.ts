@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsDate, IsOptional, IsIn } from 'class-validator';
+import { IsNotEmpty, IsString, IsDate, IsOptional, IsIn, IsMongoId } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
@@ -39,6 +39,16 @@ export class CreateBookingDto {
   @IsIn(['Pending', 'Confirmed', 'Cancelled'])
   @IsOptional()
   status?: string;
+
+  @ApiProperty({ example: '507f1f77bcf86cd799439011', description: 'Schedule ID' })
+  @IsMongoId()
+  @IsNotEmpty()
+  scheduleId!: string;
+
+  @ApiProperty({ example: 'slot-001', description: 'Slot ID' })
+  @IsString()
+  @IsNotEmpty()
+  slotId!: string;
 }
 
 export class UpdateBookingDto {
@@ -59,4 +69,14 @@ export class UpdateBookingDto {
   @IsIn(['Pending', 'Confirmed', 'Cancelled'])
   @IsOptional()
   status?: string;
+
+  @ApiProperty({ example: '507f1f77bcf86cd799439011', description: 'Updated Schedule ID' })
+  @IsMongoId()
+  @IsOptional()
+  scheduleId?: string;
+
+  @ApiProperty({ example: 'slot-001', description: 'Updated Slot ID' })
+  @IsString()
+  @IsOptional()
+  slotId?: string;
 }

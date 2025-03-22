@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 
 export type BookingDocument = Booking & Document;
@@ -29,6 +29,12 @@ export class Booking {
 
   @Prop({ required: true, enum: ['Pending', 'Confirmed', 'Cancelled'], default: 'Pending' })
   status!: string;
+
+  @Prop({ type: Types.ObjectId, ref: 'Schedule' })
+  scheduleId!: Types.ObjectId;
+
+  @Prop({ required: true })
+  slotId!: string;
 }
 
 export const BookingSchema = SchemaFactory.createForClass(Booking);

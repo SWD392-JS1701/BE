@@ -47,6 +47,21 @@ export class BookingController {
     await this.bookingService.delete(id);
   }
 
+  @Get('user/:userId')
+  @ApiOperation({ summary: 'Get all bookings for a specific user' })
+  @ApiResponse({ status: 200, description: 'List of user bookings', type: [Booking] })
+  @ApiResponse({ status: 404, description: 'No bookings found for user' })
+  async findByUserId(@Param('userId') userId: string): Promise<Booking[]> {
+    return this.bookingService.findByUserId(userId);
+  }
+
+  @Get('user/:userId/active')
+  @ApiOperation({ summary: 'Check if user has an active booking' })
+  @ApiResponse({ status: 200, description: 'Boolean indicating if user has an active booking', type: Boolean })
+  async hasActiveBooking(@Param('userId') userId: string): Promise<boolean> {
+    return this.bookingService.hasActiveBooking(userId);
+  }
+
   @Patch(':id/status')
   @ApiOperation({ summary: 'Update booking status' })
   async updateStatus(@Param('id') id: string, @Body() body: { status: string }): Promise<Booking> {
