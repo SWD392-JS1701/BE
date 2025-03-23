@@ -26,6 +26,9 @@ export class Slot {
 
   @Prop({ type: String, default: 'available' })
   status!: string;
+
+  @Prop({ type: Types.ObjectId, ref: 'Schedule'})
+  scheduleId!: Types.ObjectId;
 }
 
 export const SlotSchema = SchemaFactory.createForClass(Slot);

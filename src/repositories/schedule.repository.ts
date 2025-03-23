@@ -60,7 +60,8 @@ export class ScheduleRepository {
         .filter((slot) => slot.doctorId === doctorId)
         .map((slot) => ({
           ...JSON.parse(JSON.stringify(slot)),
-          dayOfWeek: schedule.dayOfWeek
+          dayOfWeek: schedule.dayOfWeek,
+          scheduleId: schedule._id
         }))
       matchingSlots.push(...slots)
     }
@@ -69,10 +70,17 @@ export class ScheduleRepository {
   }
 
   async findSchedulesByDoctorId(doctorId: string): Promise<ScheduleDocument[]> {
-    return this.scheduleModel
+    const schedules = await this.scheduleModel
       .find({
         'slots.doctorId': doctorId
       })
       .exec()
+
+    // Filter slots to only include those for the specified doctor
+    return schedules.map(schedule => {
+      const filteredSchedule = schedule.toObject()
+      filteredSchedule.slots = schedule.slots.filter(slot => slot.doctorId === doctorId)
+      return filteredSchedule
+    })
   }
 }
