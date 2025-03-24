@@ -35,6 +35,12 @@ export class Booking {
 
   @Prop({ required: true })
   slotId!: string;
+
+  @Prop({ required: true })
+  type!: string;
+
+  @Prop({ type: String, default: '' })
+  description?: string;
 }
 
 export const BookingSchema = SchemaFactory.createForClass(Booking);

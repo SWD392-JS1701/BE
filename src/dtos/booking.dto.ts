@@ -49,6 +49,16 @@ export class CreateBookingDto {
   @IsString()
   @IsNotEmpty()
   slotId!: string;
+
+  @ApiProperty({ example: 'Regular Checkup', description: 'Type of booking' })
+  @IsString()
+  @IsNotEmpty()
+  type!: string;
+
+  @ApiProperty({ example: 'I have been experiencing headaches for the past week', description: 'Message for the doctor' })
+  @IsString()
+  @IsOptional()
+  description?: string;
 }
 
 export class UpdateBookingDto {
@@ -79,4 +89,14 @@ export class UpdateBookingDto {
   @IsString()
   @IsOptional()
   slotId?: string;
+
+  @ApiProperty({ example: 'Follow-up Visit', description: 'Updated Type of booking' })
+  @IsString()
+  @IsOptional()
+  type?: string;
+
+  @ApiProperty({ example: 'The headaches have improved but still persist', description: 'Updated message for the doctor' })
+  @IsString()
+  @IsOptional()
+  description?: string;
 }
