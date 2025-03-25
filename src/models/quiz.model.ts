@@ -1,18 +1,18 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Document } from 'mongoose'
 
-export type QuizDocument = Quiz & Document;
+export type QuizDocument = Quiz & Document
 
 @Schema({ timestamps: true })
 export class Quiz {
   @Prop({ required: true, unique: true })
-  quiz_ID!: string;
+  quiz_ID!: string
 
   @Prop({ required: true, maxlength: 200 })
-  quiz_Name!: string;
+  quiz_Name!: string
 
   @Prop({ required: true, default: 0 })
-  point!: number;
+  point!: number
 }
 
-export const QuizSchema = SchemaFactory.createForClass(Quiz);
+export const QuizSchema = SchemaFactory.createForClass(Quiz)
