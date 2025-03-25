@@ -2,12 +2,7 @@ import { IsNotEmpty, IsString, IsNumber, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateQuizDto {
-  @ApiProperty({ example: 'quiz123', description: 'Unique quiz ID' })
-  @IsString()
-  @IsNotEmpty()
-  quiz_ID!: string;
-
-  @ApiProperty({ example: 'Math Quiz', description: 'Quiz name' })
+  @ApiProperty({ example: 'Skin Test 1 Quiz', description: 'Quiz name' })
   @IsString()
   @IsNotEmpty()
   quiz_Name!: string;
@@ -19,12 +14,12 @@ export class CreateQuizDto {
 }
 
 export class UpdateQuizDto {
-  @ApiProperty({ example: 'Science Quiz', description: 'Updated quiz name' })
+  @ApiProperty({ example: 'Skin Test 2 Quiz', description: 'Updated quiz name', required: false })
   @IsString()
   @IsNotEmpty()
   quiz_Name?: string;
 
-  @ApiProperty({ example: 15, description: 'Updated quiz point value' })
+  @ApiProperty({ example: 15, description: 'Updated quiz point value', required: false })
   @IsNumber()
   @Min(0)
   point?: number;
