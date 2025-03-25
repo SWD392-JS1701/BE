@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { RatingDto } from '~/dtos/rating.dto'
+import { RatingDto, UpdateRatingDto } from '~/dtos/rating.dto'
 import { Rating } from '~/models/rating.model'
 import { RatingRepository } from '~/repositories/rating.repository'
 
@@ -9,6 +9,10 @@ export class RatingService {
 
   async create(createRatingDto: RatingDto): Promise<Rating> {
     return this.ratingRepository.create(createRatingDto)
+  }
+
+  async update(id: string, updateRatingDto: UpdateRatingDto): Promise<Rating | null> {
+    return this.ratingRepository.update(id, updateRatingDto)
   }
 
   async getAll(): Promise<Rating[]> {

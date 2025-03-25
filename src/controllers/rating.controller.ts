@@ -1,5 +1,5 @@
-import { Controller, Post, Get, Delete, Body, Param } from '@nestjs/common'
-import { RatingDto } from '~/dtos/rating.dto'
+import { Controller, Post, Get, Delete, Body, Param, Put } from '@nestjs/common'
+import { RatingDto, UpdateRatingDto } from '~/dtos/rating.dto'
 import { Rating } from '~/models/rating.model'
 import { RatingService } from '~/services/rating.service'
 
@@ -10,6 +10,11 @@ export class RatingController {
   @Post()
   async create(@Body() createRatingDto: RatingDto): Promise<Rating> {
     return this.ratingService.create(createRatingDto)
+  }
+
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() updateRatingDto: UpdateRatingDto): Promise<Rating | null> {
+    return this.ratingService.update(id, updateRatingDto)
   }
 
   @Get()
