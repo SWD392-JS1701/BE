@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { RatingDto } from '~/dtos/rating.dto'
+import { RatingDto, UpdateRatingDto } from '~/dtos/rating.dto'
 import { Rating, RatingDocument } from '~/models/rating.model'
 import { ProductRepository } from './product.repository'
 
@@ -22,15 +22,20 @@ export class RatingRepository {
     return savedRating
   }
 
-  async update(id: string, ratingDto: Partial<RatingDto>): Promise<Rating | null> {
-    const updatedRating = await this.ratingModel.findByIdAndUpdate(id, ratingDto, { new: true }).exec()
+  async update(id: string, ratingDto: UpdateRatingDto): Promise<Rating | null> {
+    const updateData: Partial<UpdateRatingDto> = {}
+    if (ratingDto.rating !== undefined) updateData.rating = ratingDto.rating
+    if (ratingDto.comment !== undefined) updateData.comment = ratingDto.comment
+
+    const updatedRating = await this.ratingModel.findByIdAndUpdate(id, updateData, { new: true }).exec()
 
     if (!updatedRating) {
       throw new HttpException('Rating not found', HttpStatus.NOT_FOUND)
     }
 
-    // Recalculate product rating
-    await this.updateProductRating(updatedRating.product_id)
+    if (ratingDto.rating !== undefined) {
+      await this.updateProductRating(updatedRating.product_id)
+    }
 
     return updatedRating
   }
