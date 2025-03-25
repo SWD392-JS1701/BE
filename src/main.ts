@@ -9,7 +9,7 @@ async function bootstrap() {
   dotenv.config()
   const config = new DocumentBuilder()
     .setTitle('LumièreSkin')
-    .setDescription('SWP392 Final Project')
+    .setDescription('SWD392 Final Project')
     .setVersion('1.0')
     .addBearerAuth()
     .build()
