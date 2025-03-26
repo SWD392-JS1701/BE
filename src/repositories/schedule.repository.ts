@@ -58,7 +58,7 @@ export class ScheduleRepository {
     for (const schedule of schedules) {
       const slots = schedule.slots
         .filter((slot) => slot.doctorId === doctorId)
-        .map(slot => ({
+        .map((slot) => ({
           ...JSON.parse(JSON.stringify(slot)),
           dayOfWeek: schedule.dayOfWeek,
           scheduleId: schedule._id
