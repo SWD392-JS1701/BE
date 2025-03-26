@@ -8,13 +8,13 @@ export class ProductDTO {
   @IsNotEmpty()
   name!: string
 
-  @ApiProperty({ example: 4.5, required: false })
-  @IsNumber()
-  @IsPositive()
-  @Max(5)
-  @IsOptional()
-  @Type(() => Number)
-  product_rating?: number = 0
+  // @ApiProperty({ example: 4.5, required: false })
+  // @IsNumber()
+  // @IsPositive()
+  // @Max(5)
+  // @IsOptional()
+  // @Type(() => Number)
+  // product_rating?: number = 0
 
   @ApiProperty({ example: 'This is a product description.', required: false })
   @IsString()
@@ -33,7 +33,7 @@ export class ProductDTO {
   @Type(() => Number)
   stock!: number
 
-  @ApiProperty({ example: '67ca5cb7d1a1bdbe8a78f712' })
+  @ApiProperty({ example: '67bd36bcead871297243efc5' })
   @IsString()
   @IsNotEmpty()
   product_type_id!: string
@@ -73,4 +73,9 @@ export class UpdateProductDTO extends PartialType(ProductDTO) {
   @IsOptional()
   @ValidateIf((value) => value !== null)
   description?: string
+
+  @ApiProperty({ example: 'Supplier Name', required: false })
+  @IsString()
+  @IsNotEmpty()
+  supplier_name!: string
 }
