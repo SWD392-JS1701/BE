@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PaymentRepository } from '../repositories/payment.repository'
 import { CreatePaymentDto, UpdatePaymentDto } from '../dtos/payment.dto'
-import PayOS from '@payos/node'
+const PayOS = require('@payos/node')
+console.log(PayOS)
 import { OrderService } from './order.service'
 import { ConfigService } from '@nestjs/config'
 import { UpdateOrderDto } from '~/dtos/order.dto'
+import { Types } from 'mongoose'
 
 @Injectable()
 export class PaymentService {
@@ -26,7 +28,11 @@ export class PaymentService {
 
   async createPayment(createPaymentDto: CreatePaymentDto): Promise<any> {
     const { order_Id } = createPaymentDto
-    await this.paymentRepository.create(createPaymentDto)
+
+    // Convert order_Id to ObjectId
+    const orderObjectId = new Types.ObjectId(order_Id)
+
+    await this.paymentRepository.create({ ...createPaymentDto, order_Id: orderObjectId.toHexString() })
 
     const order = await this.orderService.getOrderById(order_Id)
     if (!order) throw new Error('Order not found')
@@ -34,12 +40,11 @@ export class PaymentService {
     const requestData = {
       orderCode: parseInt(order_Id, 10),
       amount: order.amount,
-      description: `Payment for Order #${order_Id}`,
+      description: `Order request`,
       cancelUrl: `${this.frontEndUrl}/cancel`,
       returnUrl: `${this.frontEndUrl}/payment-success?orderId=${order_Id}`
     }
 
-    // Create a local instance of PayOS
     const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
     const paymentLinkData = await payOs.createPaymentLink(requestData)
     return paymentLinkData
@@ -74,7 +79,7 @@ export class PaymentService {
     }
   }
 
-  async cancelPaymentLink(orderId: string | number, cancellationReason?: string): Promise<any> {
+  async cancelPaymentLink(orderId: string, cancellationReason?: string): Promise<any> {
     const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
     const payment = await payOs.cancelPaymentLink(orderId, cancellationReason)
     return payment

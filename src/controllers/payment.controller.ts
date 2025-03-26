@@ -1,6 +1,6 @@
 import { Controller, Post, Get, Param, Body, Put, Delete, NotFoundException, Req, Res } from '@nestjs/common'
 import { PaymentService } from '../services/payment.service'
-import { CreatePaymentDto, UpdatePaymentDto } from '../dtos/payment.dto'
+import { CancelPaymentDto, CreatePaymentDto, UpdatePaymentDto } from '../dtos/payment.dto'
 import { Payment } from '../models/payment.model'
 
 @Controller('payment')
@@ -29,10 +29,10 @@ export class PaymentController {
   }
 
   @Post('payment-cancel')
-  async handlePaymentCancel(@Req() req, @Res() res) {
+  async handlePaymentCancel(@Body() cancelPaymentDto: CancelPaymentDto, @Res() res) {
     try {
-      const orderId = req.body.orderId
-      await this.paymentService.cancelPaymentLink(orderId)
+      const { order_Id, cancellationReason } = cancelPaymentDto
+      await this.paymentService.cancelPaymentLink(order_Id, cancellationReason)
       return res.status(200).send({ message: 'Payment cancelled successfully' })
     } catch (error) {
       return res.status(400).send({ error: error instanceof Error ? error.message : 'An unknown error occurred' })
