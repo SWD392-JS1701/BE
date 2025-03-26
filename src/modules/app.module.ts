@@ -21,6 +21,7 @@ import { QuestionModule } from './question.module'
 import { BookingModule } from './booking.module'
 import { PromotedProductModule } from './promotedProduct.module'
 import { RatingModule } from './rating.module'
+import { PaymentModule } from './payment.module'
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { RatingModule } from './rating.module'
     QuizModule,
     QuestionModule,
     BookingModule,
+    PaymentModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
