@@ -7,6 +7,7 @@ import { OrderService } from './order.service'
 import { ConfigService } from '@nestjs/config'
 import { UpdateOrderDto } from '~/dtos/order.dto'
 import { Types } from 'mongoose'
+import { randomInt } from 'crypto'
 
 @Injectable()
 export class PaymentService {
@@ -28,25 +29,23 @@ export class PaymentService {
 
   async createPayment(createPaymentDto: CreatePaymentDto): Promise<any> {
     const { order_Id } = createPaymentDto
-
-    // Convert order_Id to ObjectId
-    const orderObjectId = new Types.ObjectId(order_Id)
-
-    await this.paymentRepository.create({ ...createPaymentDto, order_Id: orderObjectId.toHexString() })
-
     const order = await this.orderService.getOrderById(order_Id)
     if (!order) throw new Error('Order not found')
 
+    const orderCode = randomInt(10000000, 99999999)
     const requestData = {
-      orderCode: parseInt(order_Id, 10),
+      orderCode: orderCode,
       amount: order.amount,
-      description: `Order request`,
+      description: `${order_Id}`,
       cancelUrl: `${this.frontEndUrl}/cancel`,
       returnUrl: `${this.frontEndUrl}/payment-success?orderId=${order_Id}`
     }
 
     const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
     const paymentLinkData = await payOs.createPaymentLink(requestData)
+    const orderObjectId = new Types.ObjectId(order_Id)
+
+    await this.paymentRepository.create({ ...createPaymentDto, order_Id: orderObjectId.toHexString() })
     return paymentLinkData
   }
 
@@ -62,19 +61,28 @@ export class PaymentService {
     const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
 
     try {
+      console.log('Received Webhook:', webhookData)
+
       const paymentData = payOs.verifyPaymentWebhookData(webhookData)
       if (!paymentData) {
         throw new Error('Invalid webhook data')
       }
 
-      const orderCode = String(paymentData.orderCode)
+      console.log('Payment Data:', paymentData)
 
-      // Update order status in database
+      // Ensure payment status is successful before updating order status
+      if (paymentData.status !== 'successful') {
+        console.warn(`Payment status is ${paymentData.status}, not updating order`)
+        return { success: false, message: 'Payment not completed' }
+      }
+
+      const orderCode = String(paymentData.orderCode)
       const updateOrderDto: UpdateOrderDto = { status: 1 }
       await this.orderService.updateOrder(orderCode, updateOrderDto)
 
       return { success: true, paymentData }
     } catch (error) {
+      console.error('Webhook verification failed:', error)
       throw new Error('Webhook verification failed')
     }
   }
