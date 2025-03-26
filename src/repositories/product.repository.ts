@@ -61,7 +61,10 @@ export class ProductRepository {
   }
 
   async create(productData: Partial<Product>): Promise<Product> {
-    const newProduct = new this.productModel(productData)
+    const newProduct = new this.productModel({
+      ...productData,
+      product_rating: productData.product_rating ?? 0
+    })
     return newProduct.save()
   }
 
@@ -69,7 +72,15 @@ export class ProductRepository {
     if (!Types.ObjectId.isValid(id)) {
       throw new HttpException('Invalid product ID format', HttpStatus.BAD_REQUEST)
     }
-    return this.productModel.findByIdAndUpdate(id, { $set: updateData, updatedAt: new Date() }, { new: true }).exec()
+    return this.productModel
+      .findByIdAndUpdate(
+        id,
+        {
+          $set: { ...updateData, product_rating: updateData.product_rating ?? 0, updatedAt: new Date() }
+        },
+        { new: true }
+      )
+      .exec()
   }
 
   async delete(id: string): Promise<Product | null> {
