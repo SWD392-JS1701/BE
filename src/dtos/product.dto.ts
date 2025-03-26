@@ -46,7 +46,7 @@ export class ProductDTO {
   @ApiProperty({ example: 'Supplier Name', required: false })
   @IsString()
   @IsNotEmpty()
-  supplier_name!: string
+  Supplier!: string
 
   @ApiProperty({ example: '2025-12-31T23:59:59.999Z', required: false })
   @IsDate()
@@ -77,5 +77,5 @@ export class UpdateProductDTO extends PartialType(ProductDTO) {
   @ApiProperty({ example: 'Supplier Name', required: false })
   @IsString()
   @IsNotEmpty()
-  supplier_name!: string
+  Supplier!: string
 }
