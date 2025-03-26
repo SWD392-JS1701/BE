@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Question, QuestionDocument } from '../models/question.model';
 
 @Injectable()
@@ -16,14 +16,26 @@ export class QuestionRepository {
   }
 
   async findById(id: string): Promise<Question | null> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException(`Invalid Question ID format: ${id}`);
+    }
     return this.questionModel.findById(id).exec();
   }
 
   async update(id: string, updateData: Partial<Question>): Promise<Question | null> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException(`Invalid Question ID format: ${id}`);
+    }
     return this.questionModel.findByIdAndUpdate(id, updateData, { new: true }).exec();
   }
 
   async delete(id: string): Promise<void> {
-    await this.questionModel.findByIdAndDelete(id);
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException(`Invalid Question ID format: ${id}`);
+    }
+    const deletedQuestion = await this.questionModel.findByIdAndDelete(id).exec();
+    if (!deletedQuestion) {
+      throw new NotFoundException(`Question with ID ${id} not found`);
+    }
   }
 }

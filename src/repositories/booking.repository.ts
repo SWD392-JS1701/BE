@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Booking, BookingDocument } from '../models/booking.model';
 import { CreateBookingDto, UpdateBookingDto } from '../dtos/booking.dto';
 
@@ -9,8 +9,7 @@ export class BookingRepository {
   constructor(@InjectModel(Booking.name) private bookingModel: Model<BookingDocument>) {}
 
   async create(bookingData: CreateBookingDto): Promise<Booking> {
-    const booking = new this.bookingModel(bookingData);
-    return booking.save();
+    return new this.bookingModel(bookingData).save();
   }
 
   async findAll(): Promise<Booking[]> {
@@ -18,7 +17,10 @@ export class BookingRepository {
   }
 
   async findById(id: string): Promise<Booking | null> {
-    return this.bookingModel.findById(id).exec();
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException(`Invalid ID format: ${id}`);
+    }
+    return this.bookingModel.findById(new Types.ObjectId(id)).exec();
   }
 
   async update(id: string, updateData: UpdateBookingDto): Promise<Booking | null> {
@@ -29,7 +31,11 @@ export class BookingRepository {
     return this.bookingModel.findByIdAndUpdate(id, { status }, { new: true }).exec();
   }
 
-  async delete(id: string): Promise<void> {
-    await this.bookingModel.findByIdAndDelete(id).exec();
+  async delete(id: string): Promise<{ message: string }> {
+    const deletedBooking = await this.bookingModel.findByIdAndDelete(id).exec();
+    if (!deletedBooking) {
+      throw new NotFoundException(`Booking with ID ${id} not found`);
+    }
+    return { message: "Booking successfully deleted" };
   }
 }

@@ -8,6 +8,9 @@ export class Doctor {
   @Prop({ required: true })
   user_Id!: string
 
+  @Prop({ required: true })
+  name!: string
+
   @Prop({ required: true, maxlength: 100 })
   certification!: string
 
