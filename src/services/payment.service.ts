@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PaymentRepository } from '../repositories/payment.repository'
 import { CreatePaymentDto, UpdatePaymentDto } from '../dtos/payment.dto'
-import { Payment } from '../models/payment.model'
 import PayOS from '@payos/node'
 import { OrderService } from './order.service'
 import { ConfigService } from '@nestjs/config'
@@ -9,7 +8,6 @@ import { UpdateOrderDto } from '~/dtos/order.dto'
 
 @Injectable()
 export class PaymentService {
-  private payos: PayOS
   private frontEndUrl: string
   private PAYOS_CLIENT_ID: string
   private PAYOS_API_KEY: string
@@ -20,75 +18,65 @@ export class PaymentService {
     private readonly orderService: OrderService,
     private readonly configService: ConfigService
   ) {
-    console.log('PaymentRepository:', paymentRepository)
-    console.log('OrderService:', orderService)
-    console.log('ConfigService:', configService)
     this.frontEndUrl = this.configService.get<string>('FRONT_END_URL') || 'http://localhost:3000'
     this.PAYOS_CLIENT_ID = this.configService.get<string>('PAYOS_CLIENT_ID') || ''
     this.PAYOS_API_KEY = this.configService.get<string>('PAYOS_API_KEY') || ''
     this.PAYOS_CHECKSUM_KEY = this.configService.get<string>('PAYOS_CHECKSUM_KEY') || ''
-    console.log('PayOS credentials:', {
-      clientId: this.PAYOS_CLIENT_ID,
-      apiKey: this.PAYOS_API_KEY,
-      checksumKey: this.PAYOS_CHECKSUM_KEY
-    })
-    this.payos = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
   }
 
   async createPayment(createPaymentDto: CreatePaymentDto): Promise<any> {
-    const { order_id } = createPaymentDto
+    const { order_Id } = createPaymentDto
     await this.paymentRepository.create(createPaymentDto)
 
-    const order = await this.orderService.getOrderById(order_id)
+    const order = await this.orderService.getOrderById(order_Id)
     if (!order) throw new Error('Order not found')
 
     const requestData = {
-      orderCode: parseInt(order_id, 10),
+      orderCode: parseInt(order_Id, 10),
       amount: order.amount,
-      description: `Payment for Order #${order_id}`,
+      description: `Payment for Order #${order_Id}`,
       cancelUrl: `${this.frontEndUrl}/cancel`,
-      returnUrl: `${this.frontEndUrl}/payment-success?orderId=${order_id}`
+      returnUrl: `${this.frontEndUrl}/payment-success?orderId=${order_Id}`
     }
 
-    const paymentLinkData = await this.payos.createPaymentLink(requestData)
+    // Create a local instance of PayOS
+    const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
+    const paymentLinkData = await payOs.createPaymentLink(requestData)
     return paymentLinkData
   }
 
-  async getAllPayments(): Promise<Payment[]> {
-    return this.paymentRepository.findAll()
-  }
-
-  async getPaymentById(id: string): Promise<Payment> {
-    const payment = await this.paymentRepository.findById(id)
-    if (!payment) throw new NotFoundException('Payment not found')
-    return payment
-  }
-
-  async updatePayment(id: string, updatePaymentDto: UpdatePaymentDto): Promise<Payment> {
-    const payment = await this.paymentRepository.update(id, updatePaymentDto)
-    if (!payment) throw new NotFoundException('Payment not found')
-    return payment
-  }
-
-  async deletePayment(id: string): Promise<Payment> {
-    const payment = await this.paymentRepository.delete(id)
+  async getPaymentById(id: string): Promise<any> {
+    var orderId = parseInt(id, 10)
+    const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
+    const payment = await payOs.getPaymentLinkInformation(orderId)
     if (!payment) throw new NotFoundException('Payment not found')
     return payment
   }
 
   async verifyPaymentWebhook(webhookData: any): Promise<any> {
-    const paymentData = this.payos.verifyPaymentWebhookData(webhookData)
+    const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
 
-    if (paymentData) {
-      const orderCodeString = String(paymentData.orderCode)
-
-      const updateOrderDto: UpdateOrderDto = {
-        status: 1
+    try {
+      const paymentData = payOs.verifyPaymentWebhookData(webhookData)
+      if (!paymentData) {
+        throw new Error('Invalid webhook data')
       }
 
-      await this.orderService.updateOrder(orderCodeString, updateOrderDto)
-    }
+      const orderCode = String(paymentData.orderCode)
 
-    return paymentData
+      // Update order status in database
+      const updateOrderDto: UpdateOrderDto = { status: 1 }
+      await this.orderService.updateOrder(orderCode, updateOrderDto)
+
+      return { success: true, paymentData }
+    } catch (error) {
+      throw new Error('Webhook verification failed')
+    }
+  }
+
+  async cancelPaymentLink(orderId: string | number, cancellationReason?: string): Promise<any> {
+    const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
+    const payment = await payOs.cancelPaymentLink(orderId, cancellationReason)
+    return payment
   }
 }
