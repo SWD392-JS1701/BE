@@ -63,7 +63,13 @@ export class BookingController {
   async findByUserId(@Param('userId') userId: string): Promise<Booking[]> {
     return this.bookingService.findByUserId(userId);
   }
-
+  @Get('doctor/:DoctorId')
+  @ApiOperation({ summary: 'Get all bookings for a specific doctor' })
+  @ApiResponse({ status: 200, description: 'List of doctor bookings', type: [Booking] })
+  @ApiResponse({ status: 404, description: 'No bookings found for doctor' })
+  async findByDoctorId(@Param('DoctorId') DoctorId: string): Promise<Booking[]> {
+    return this.bookingService.findByDoctorId(DoctorId);
+  } 
   @Get('user/:userId/active')
   @ApiOperation({ summary: 'Check if a user has an active booking' })
   @ApiParam({ name: 'userId', required: true, description: 'User ID' })

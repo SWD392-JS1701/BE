@@ -27,6 +27,13 @@ export class BookingService {
     return booking;
   }
 
+  
+  async findByDoctorId(DoctorId: string): Promise<Booking[]> {
+    const bookings = await this.bookingModel.find({ doctor_id: DoctorId  }).exec();
+    return bookings || [];
+  }
+  
+
   async update(id: string, updateBookingDto: UpdateBookingDto): Promise<Booking> {
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException(`Invalid ID format: ${id}`);
