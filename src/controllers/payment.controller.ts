@@ -18,6 +18,16 @@ export class PaymentController {
     return paymentData
   }
 
+  @Get('payment/:orderCode')
+  async getOrderPaymentByOrderCoded(@Param('orderCode') orderCode: number, @Res() res): Promise<any> {
+    try {
+      const payment = await this.paymentService.getOrderPaymentByOrderCode(orderCode)
+      return res.status(200).send(payment)
+    } catch (error) {
+      return res.status(400).send({ error: error instanceof Error ? error.message : 'An unknown error occurred' })
+    }
+  }
+
   @Get('payment/:orderId')
   async getOrderPaymentByOrderId(@Param('orderId') orderId: string, @Res() res) {
     try {

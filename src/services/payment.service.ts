@@ -70,6 +70,13 @@ export class PaymentService {
     return payment
   }
 
+  async getOrderPaymentByOrderCode(orderCode: number): Promise<any> {
+    const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
+    const payment = await payOs.getPaymentLinkInformation(orderCode)
+    if (!payment) throw new NotFoundException('Payment not found')
+    return payment
+  }
+
   async checkPayment(order_Id: string): Promise<any> {
     const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
 
