@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { PromotionRepository } from '../repositories/promotion.repository'
 import { CreatePromotionDto, UpdatePromotionDto } from '~/dtos/promotion.dto'
 import { Promotion } from '../models/promotion.model'
@@ -8,6 +8,9 @@ export class PromotionService {
   constructor(private readonly promotionRepository: PromotionRepository) {}
 
   async create(createPromotionDto: CreatePromotionDto): Promise<Promotion> {
+    const promotionList = await this.promotionRepository.findAll()
+    const isDuplicate = promotionList.some((promotion) => promotion.title === createPromotionDto.title)
+    if (isDuplicate) throw new BadRequestException(`Promotion title already exists: ${createPromotionDto.title}`)
     return this.promotionRepository.create(createPromotionDto)
   }
 
@@ -24,6 +27,10 @@ export class PromotionService {
   }
 
   async update(id: string, updatePromotionDto: UpdatePromotionDto): Promise<Promotion> {
+    const promotionList = await this.promotionRepository.findAll()
+    const isDuplicate = promotionList.some((promotion) => promotion.title === updatePromotionDto.title)
+    if (isDuplicate) throw new BadRequestException(`Promotion title already exists: ${updatePromotionDto.title}`)
+
     const updatedPromotion = await this.promotionRepository.update(id, updatePromotionDto)
     if (!updatedPromotion) {
       throw new NotFoundException(`Promotion with id ${id} not found`)

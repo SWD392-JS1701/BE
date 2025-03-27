@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common'
 import { PromotedProductRepository } from '../repositories/promotedProduct.repository'
 import { CreatePromotedProductDto } from '~/dtos/promotedProduct.dto'
 import { PromotedProduct } from '~/models/promotedProduct.model'
@@ -9,6 +9,13 @@ export class PromotedProductService {
   constructor(private readonly promotedProductRepository: PromotedProductRepository) {}
 
   async create(createPromotedProductDto: CreatePromotedProductDto): Promise<PromotedProduct> {
+    const existingPromotedProduct = await this.findAll()
+    const isDuplicate = existingPromotedProduct.some(
+      (product) =>
+        product.promotion_id === createPromotedProductDto.promotion_id &&
+        product.product_id === createPromotedProductDto.product_id
+    )
+    if (isDuplicate) throw new BadRequestException(`Promoted product already exists.`)
     return this.promotedProductRepository.create(createPromotedProductDto)
   }
 
