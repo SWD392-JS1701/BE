@@ -7,7 +7,7 @@ export class CreateOrderPaymentDto {
     example: '507f1f77bcf86cd799439011',
     type: String
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   order_Id!: string
 
@@ -16,7 +16,6 @@ export class CreateOrderPaymentDto {
     example: 100000,
     type: Number
   })
-  @IsOptional()
   @IsNumber()
   amount?: number
 
@@ -25,7 +24,6 @@ export class CreateOrderPaymentDto {
     example: 12345678,
     type: Number
   })
-  @IsOptional()
   @IsNumber()
   orderCode?: number
 
@@ -34,7 +32,7 @@ export class CreateOrderPaymentDto {
     example: 'Thanh toán đơn hàng 507f1f77bcf86cd799439011',
     type: String
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   description?: string
 
@@ -43,7 +41,7 @@ export class CreateOrderPaymentDto {
     example: 'http://localhost:3000/cancel',
     type: String
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   cancelUrl?: string
 
@@ -52,7 +50,7 @@ export class CreateOrderPaymentDto {
     example: 'http://localhost:3000/payment-success?orderId=507f1f77bcf86cd799439011',
     type: String
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   returnUrl?: string
 }
@@ -94,7 +92,7 @@ export class CancelOrderPaymentDto {
     example: '507f1f77bcf86cd799439011',
     type: String
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   order_Id!: string
 
