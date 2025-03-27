@@ -8,7 +8,7 @@ export class Payment {
   @Prop({ required: true })
   order_Id!: string
 
-  @Prop({ default: 1 })
+  @Prop({ default: 0 })
   status!: number
 }
 export const PaymentSchema = SchemaFactory.createForClass(Payment)
