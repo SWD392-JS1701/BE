@@ -32,15 +32,14 @@ export class PaymentService {
     const order = await this.orderService.getOrderById(order_Id)
     if (!order) throw new Error('Order not found')
 
-    const orderCode = randomInt(10000000, 99999999)
+    const orderPayosCode = randomInt(10000000, 99999999)
     const requestData = {
-      orderCode: orderCode,
+      orderCode: orderPayosCode,
       amount: order.amount,
       description: `${order_Id}`,
       cancelUrl: `${this.frontEndUrl}/cancel`,
       returnUrl: `${this.frontEndUrl}/payment-success?orderId=${order_Id}`
     }
-    console.log(requestData)
 
     const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
     const paymentLinkData = await payOs.createPaymentLink(requestData)
@@ -49,13 +48,13 @@ export class PaymentService {
     await this.paymentRepository.create({
       ...createOrderPaymentDto,
       order_Id: orderObjectId.toString(),
-      orderCode: orderCode
+      orderCode: orderPayosCode
     })
     return paymentLinkData
   }
 
-  async getOrderPaymentById(id: string): Promise<any> {
-    var orderId = parseInt(id, 10)
+  async getOrderPaymentById(id: number): Promise<any> {
+    var orderId = id
     const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
     const payment = await payOs.getPaymentLinkInformation(orderId)
     if (!payment) throw new NotFoundException('Payment not found')
@@ -76,6 +75,8 @@ export class PaymentService {
       if (!order) {
         throw new Error('Order not found')
       }
+
+      console.log('Order:', order)
       const orderCode = order.orderCode
       const paymentData = payOs.getPaymentLinkInformation(orderCode)
       if (!paymentData) {

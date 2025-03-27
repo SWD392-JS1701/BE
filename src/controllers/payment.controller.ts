@@ -13,7 +13,7 @@ export class PaymentController {
   }
 
   @Get(':id')
-  async getPaymentById(@Param('id') id: string): Promise<Payment> {
+  async getPaymentById(@Param('id') id: number): Promise<Payment> {
     return this.paymentService.getOrderPaymentById(id)
   }
 
@@ -22,7 +22,15 @@ export class PaymentController {
     const paymentData = await this.paymentService.checkPayment(id)
     return paymentData
   }
-
+  @Get('payment-success/:orderId')
+  async getOrderPaymentByOrderId(@Param('orderId') orderId: string, @Res() res) {
+    try {
+      const payment = await this.paymentService.getOrderPaymentByOrderId(orderId)
+      return res.status(200).send(payment)
+    } catch (error) {
+      return res.status(400).send({ error: error instanceof Error ? error.message : 'An unknown error occurred' })
+    }
+  }
   @Post('payment-cancel')
   async handlePaymentCancel(@Body() cancelPaymentDto: CancelOrderPaymentDto, @Res() res) {
     try {
