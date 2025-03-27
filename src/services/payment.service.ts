@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PaymentRepository } from '../repositories/payment.repository'
-import { CreatePaymentDto, UpdatePaymentDto } from '../dtos/payment.dto'
+import { CreateOrderPaymentDto, UpdateOrderPaymentDto } from '../dtos/payment.dto'
 const PayOS = require('@payos/node')
 console.log(PayOS)
 import { OrderService } from './order.service'
@@ -27,8 +27,8 @@ export class PaymentService {
     this.PAYOS_CHECKSUM_KEY = this.configService.get<string>('PAYOS_CHECKSUM_KEY') || ''
   }
 
-  async createPayment(createPaymentDto: CreatePaymentDto): Promise<any> {
-    const { order_Id } = createPaymentDto
+  async createOrderPayment(createOrderPaymentDto: CreateOrderPaymentDto): Promise<any> {
+    const { order_Id } = createOrderPaymentDto
     const order = await this.orderService.getOrderById(order_Id)
     if (!order) throw new Error('Order not found')
 
@@ -40,16 +40,21 @@ export class PaymentService {
       cancelUrl: `${this.frontEndUrl}/cancel`,
       returnUrl: `${this.frontEndUrl}/payment-success?orderId=${order_Id}`
     }
+    console.log(requestData)
 
     const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
     const paymentLinkData = await payOs.createPaymentLink(requestData)
     const orderObjectId = new Types.ObjectId(order_Id)
 
-    await this.paymentRepository.create({ ...createPaymentDto, order_Id: orderObjectId.toHexString() })
+    await this.paymentRepository.create({
+      ...createOrderPaymentDto,
+      order_Id: orderObjectId.toString(),
+      orderCode: orderCode
+    })
     return paymentLinkData
   }
 
-  async getPaymentById(id: string): Promise<any> {
+  async getOrderPaymentById(id: string): Promise<any> {
     var orderId = parseInt(id, 10)
     const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
     const payment = await payOs.getPaymentLinkInformation(orderId)
@@ -57,33 +62,41 @@ export class PaymentService {
     return payment
   }
 
-  async verifyPaymentWebhook(webhookData: any): Promise<any> {
+  async getOrderPaymentByOrderId(orderId: string): Promise<any> {
+    const payment = await this.paymentRepository.findByOrderId(orderId)
+    if (!payment) throw new NotFoundException('Payment not found')
+    return payment
+  }
+
+  async checkPayment(order_Id: string): Promise<any> {
     const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
 
     try {
-      console.log('Received Webhook:', webhookData)
-
-      const paymentData = payOs.verifyPaymentWebhookData(webhookData)
+      const order = await this.getOrderPaymentByOrderId(order_Id)
+      if (!order) {
+        throw new Error('Order not found')
+      }
+      const orderCode = order.orderCode
+      const paymentData = payOs.getPaymentLinkInformation(orderCode)
       if (!paymentData) {
-        throw new Error('Invalid webhook data')
+        throw new Error('Invalid payment data')
       }
 
       console.log('Payment Data:', paymentData)
 
-      // Ensure payment status is successful before updating order status
-      if (paymentData.status !== 'successful') {
+      if (paymentData.status !== 'PAID') {
         console.warn(`Payment status is ${paymentData.status}, not updating order`)
         return { success: false, message: 'Payment not completed' }
       }
 
-      const orderCode = String(paymentData.orderCode)
+      const description = paymentData.transactions[0]?.description
       const updateOrderDto: UpdateOrderDto = { status: 1 }
-      await this.orderService.updateOrder(orderCode, updateOrderDto)
+      await this.orderService.updateOrder(description, updateOrderDto)
 
       return { success: true, paymentData }
     } catch (error) {
-      console.error('Webhook verification failed:', error)
-      throw new Error('Webhook verification failed')
+      console.error('Payment verification failed:', error)
+      throw new Error('Payment verification failed')
     }
   }
 

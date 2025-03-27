@@ -10,5 +10,8 @@ export class Payment {
 
   @Prop({ default: 0 })
   status!: number
+
+  @Prop()
+  orderCode?: number
 }
 export const PaymentSchema = SchemaFactory.createForClass(Payment)
