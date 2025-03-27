@@ -28,37 +28,40 @@ export class PaymentService {
   }
 
   async createOrderPayment(createOrderPaymentDto: CreateOrderPaymentDto): Promise<any> {
-    const { order_Id } = createOrderPaymentDto
+    const { order_Id, cancelUrl, returnUrl } = createOrderPaymentDto
     const order = await this.orderService.getOrderById(order_Id)
     if (!order) throw new Error('Order not found')
 
-    const orderPayosCode = randomInt(10000000, 99999999)
+    const orderPayosCode = createOrderPaymentDto.orderCode || randomInt(10000000, 99999999)
+
     const requestData = {
       orderCode: orderPayosCode,
       amount: order.amount,
       description: `${order_Id}`,
-      cancelUrl: `${this.frontEndUrl}/cancel`,
-      returnUrl: `${this.frontEndUrl}/payment-success?orderId=${order_Id}`
+      cancelUrl: cancelUrl || `${this.frontEndUrl}/cancel`,
+      returnUrl: returnUrl || `${this.frontEndUrl}/payment-success/${order_Id}`
     }
 
     const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
     const paymentLinkData = await payOs.createPaymentLink(requestData)
-    const orderObjectId = new Types.ObjectId(order_Id)
+    const paymentReturnData = await payOs.getPaymentLinkInformation(orderPayosCode)
 
-    await this.paymentRepository.create({
-      ...createOrderPaymentDto,
-      order_Id: orderObjectId.toString(),
-      orderCode: orderPayosCode
-    })
+    const paymentData = {
+      order_Id: paymentReturnData.description,
+      orderCode: paymentReturnData.orderCode,
+      amount: paymentReturnData.amount,
+      amountPaid: paymentReturnData.amountPaid || 0,
+      amountRemaining: paymentReturnData.amountRemaining || paymentReturnData.amount,
+      status: paymentReturnData.status,
+      createdAt: paymentReturnData.createdAt || new Date().toISOString(),
+      transactions: paymentReturnData.transactions || [],
+      cancellationReason: null,
+      canceledAt: null
+    }
+
+    await this.paymentRepository.create(paymentData)
+
     return paymentLinkData
-  }
-
-  async getOrderPaymentById(id: number): Promise<any> {
-    var orderId = id
-    const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
-    const payment = await payOs.getPaymentLinkInformation(orderId)
-    if (!payment) throw new NotFoundException('Payment not found')
-    return payment
   }
 
   async getOrderPaymentByOrderId(orderId: string): Promise<any> {
@@ -71,14 +74,14 @@ export class PaymentService {
     const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
 
     try {
-      const order = await this.getOrderPaymentByOrderId(order_Id)
-      if (!order) {
+      const paymentRecord = await this.getOrderPaymentByOrderId(order_Id)
+      if (!paymentRecord) {
         throw new Error('Order not found')
       }
 
-      console.log('Order:', order)
-      const orderCode = order.orderCode
-      const paymentData = payOs.getPaymentLinkInformation(orderCode)
+      const orderCode = paymentRecord.orderCode
+      console.log('Order Code:', orderCode)
+      const paymentData = await payOs.getPaymentLinkInformation(orderCode)
       if (!paymentData) {
         throw new Error('Invalid payment data')
       }
@@ -90,9 +93,15 @@ export class PaymentService {
         return { success: false, message: 'Payment not completed' }
       }
 
-      const description = paymentData.transactions[0]?.description
+      const orderId = paymentData.transactions[0]?.description
       const updateOrderDto: UpdateOrderDto = { status: 1 }
-      await this.orderService.updateOrder(description, updateOrderDto)
+      await this.orderService.updateOrder(orderId, updateOrderDto)
+
+      paymentRecord.status = paymentData.status
+      paymentRecord.amountPaid = paymentData.amountPaid
+      paymentRecord.amountRemaining = paymentData.amountRemaining
+      paymentRecord.transactions = paymentData.transactions
+      await this.paymentRepository.update(paymentRecord)
 
       return { success: true, paymentData }
     } catch (error) {

@@ -16,4 +16,8 @@ export class PaymentRepository {
   async findByOrderId(orderId: string): Promise<Payment | null> {
     return this.paymentModel.findOne({ order_Id: orderId }).exec()
   }
+
+  async update(payment: Payment): Promise<Payment | null> {
+    return this.paymentModel.findOneAndUpdate({ order_Id: payment.order_Id }, payment, { new: true }).exec()
+  }
 }

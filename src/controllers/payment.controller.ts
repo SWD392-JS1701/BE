@@ -12,11 +12,6 @@ export class PaymentController {
     return this.paymentService.createOrderPayment(createOrderPaymentDto)
   }
 
-  @Get(':id')
-  async getPaymentById(@Param('id') id: number): Promise<Payment> {
-    return this.paymentService.getOrderPaymentById(id)
-  }
-
   @Post('check/:id')
   async checkPayment(@Param('id') id: string): Promise<any> {
     const paymentData = await this.paymentService.checkPayment(id)
