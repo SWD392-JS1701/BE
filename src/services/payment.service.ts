@@ -47,7 +47,7 @@ export class PaymentService {
     const paymentReturnData = await payOs.getPaymentLinkInformation(orderPayosCode)
 
     const paymentData = {
-      order_Id: paymentReturnData.description,
+      order_Id: order_Id || paymentReturnData.description,
       orderCode: paymentReturnData.orderCode,
       amount: paymentReturnData.amount,
       amountPaid: paymentReturnData.amountPaid || 0,
