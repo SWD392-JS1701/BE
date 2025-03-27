@@ -22,29 +22,28 @@ export class GeminiService {
     try {
       const model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-      // Get all products and product types
+      // lấy sản phẩm trg database cùng với types
       const products = await this.productService.findAll();
       const productTypes = await this.productTypeRepository.findAll();
 
-      // Create product type context
+      
       const productTypeContext = productTypes.map(type => 
         `Category: ${type.name}\nDescription: ${type.description}`
       ).join('\n\n');
 
-      // Create product context with more details
+      
       const productContext = products.map(product => 
        `Product: ${product.name}
-        Category: ${product.product_type_id}
-        Price: ${product.price}đ
+        Price: ${product.price}000đ
         Rating: ${product.product_rating}/5
         Description: ${product.description || 'Not specified'}
         Stock: ${product.stock}
         Supplier: ${product.Supplier}
         Volume: ${product.volume}ml
-        Expiry Date: ${product.expired_date}
         Image URL: ${product.image_url || 'Not available'}`
       ).join('\n\n');
-
+      
+      //feed thông tin tất cả sản phẩm cho ai
       const systemPrompt = `You are a skincare expert AI assistant for LumièreSkin. Here is our complete product catalog information:
 
       PRODUCT CATEGORIES:
@@ -59,7 +58,7 @@ export class GeminiService {
       3. Price ranges
       4. Product ratings
       5. Stock availability
-      6. Volume and expiry dates
+      6. Volume 
       7. Supplier information
 
       User question: ${prompt}`;
