@@ -17,7 +17,8 @@ export class PaymentController {
     const paymentData = await this.paymentService.checkPayment(id)
     return paymentData
   }
-  @Get('payment-success/:orderId')
+
+  @Get('payment/:orderId')
   async getOrderPaymentByOrderId(@Param('orderId') orderId: string, @Res() res) {
     try {
       const payment = await this.paymentService.getOrderPaymentByOrderId(orderId)
@@ -26,6 +27,7 @@ export class PaymentController {
       return res.status(400).send({ error: error instanceof Error ? error.message : 'An unknown error occurred' })
     }
   }
+
   @Post('payment-cancel')
   async handlePaymentCancel(@Body() cancelPaymentDto: CancelOrderPaymentDto, @Res() res) {
     try {
