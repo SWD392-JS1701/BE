@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PaymentRepository } from '../repositories/payment.repository'
-import { CreatePaymentDto, UpdatePaymentDto } from '../dtos/payment.dto'
+import { CreateOrderPaymentDto, UpdateOrderPaymentDto } from '../dtos/payment.dto'
 const PayOS = require('@payos/node')
 console.log(PayOS)
 import { OrderService } from './order.service'
@@ -27,63 +27,115 @@ export class PaymentService {
     this.PAYOS_CHECKSUM_KEY = this.configService.get<string>('PAYOS_CHECKSUM_KEY') || ''
   }
 
-  async createPayment(createPaymentDto: CreatePaymentDto): Promise<any> {
-    const { order_Id } = createPaymentDto
+  async createOrderPayment(createOrderPaymentDto: CreateOrderPaymentDto): Promise<any> {
+    const { order_Id, cancelUrl, returnUrl } = createOrderPaymentDto
     const order = await this.orderService.getOrderById(order_Id)
     if (!order) throw new Error('Order not found')
 
-    const orderCode = randomInt(10000000, 99999999)
+    const orderPayosCode = createOrderPaymentDto.orderCode || randomInt(10000000, 99999999)
+
     const requestData = {
-      orderCode: orderCode,
+      orderCode: orderPayosCode,
       amount: order.amount,
       description: `${order_Id}`,
-      cancelUrl: `${this.frontEndUrl}/cancel`,
-      returnUrl: `${this.frontEndUrl}/payment-success?orderId=${order_Id}`
+      cancelUrl: cancelUrl || `${this.frontEndUrl}/cancel`,
+      returnUrl: returnUrl || `${this.frontEndUrl}/payment-success/${order_Id}`
     }
 
     const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
     const paymentLinkData = await payOs.createPaymentLink(requestData)
-    const orderObjectId = new Types.ObjectId(order_Id)
+    const paymentReturnData = await payOs.getPaymentLinkInformation(orderPayosCode)
 
-    await this.paymentRepository.create({ ...createPaymentDto, order_Id: orderObjectId.toHexString() })
+    const paymentData = {
+      order_Id: order_Id || paymentReturnData.description,
+      orderCode: paymentReturnData.orderCode,
+      amount: paymentReturnData.amount,
+      amountPaid: paymentReturnData.amountPaid || 0,
+      amountRemaining: paymentReturnData.amountRemaining || paymentReturnData.amount,
+      status: paymentReturnData.status,
+      createdAt: paymentReturnData.createdAt || new Date().toISOString(),
+      transactions: paymentReturnData.transactions || [],
+      cancellationReason: null,
+      canceledAt: null
+    }
+
+    await this.paymentRepository.create(paymentData)
+
     return paymentLinkData
   }
 
-  async getPaymentById(id: string): Promise<any> {
-    var orderId = parseInt(id, 10)
-    const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
-    const payment = await payOs.getPaymentLinkInformation(orderId)
+  async getOrderPaymentByOrderId(orderId: string): Promise<any> {
+    const payment = await this.paymentRepository.findByOrderId(orderId)
     if (!payment) throw new NotFoundException('Payment not found')
     return payment
   }
 
-  async verifyPaymentWebhook(webhookData: any): Promise<any> {
+  async getOrderPaymentByOrderCode(orderCode: number): Promise<any> {
+    const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
+    const payment = await payOs.getPaymentLinkInformation(orderCode)
+    if (!payment) throw new NotFoundException('Payment not found')
+    return payment
+  }
+
+  async checkPayment(order_Id: string): Promise<any> {
     const payOs = new PayOS(this.PAYOS_CLIENT_ID, this.PAYOS_API_KEY, this.PAYOS_CHECKSUM_KEY)
 
     try {
-      console.log('Received Webhook:', webhookData)
+      const paymentRecord = await this.getOrderPaymentByOrderId(order_Id)
+      if (!paymentRecord) {
+        throw new Error('Order not found')
+      }
 
-      const paymentData = payOs.verifyPaymentWebhookData(webhookData)
+      const orderCode = paymentRecord.orderCode
+      console.log('Order Code:', orderCode)
+      const paymentData = await payOs.getPaymentLinkInformation(orderCode)
       if (!paymentData) {
-        throw new Error('Invalid webhook data')
+        throw new Error('Invalid payment data')
       }
 
-      console.log('Payment Data:', paymentData)
+      console.log('PayOS Status Response:', paymentData)
 
-      // Ensure payment status is successful before updating order status
-      if (paymentData.status !== 'successful') {
-        console.warn(`Payment status is ${paymentData.status}, not updating order`)
-        return { success: false, message: 'Payment not completed' }
+      // Create updated payment data from PayOS response
+      const updatedPaymentData = {
+        order_Id: order_Id,
+        orderCode: paymentData.orderCode,
+        amount: paymentData.amount,
+        amountPaid: paymentData.amountPaid,
+        amountRemaining: paymentData.amountRemaining,
+        status: paymentData.status,
+        createdAt: paymentData.createdAt,
+        transactions: paymentData.transactions || [],
+        cancellationReason: paymentData.cancellationReason,
+        canceledAt: paymentData.canceledAt
       }
 
-      const orderCode = String(paymentData.orderCode)
-      const updateOrderDto: UpdateOrderDto = { status: 1 }
-      await this.orderService.updateOrder(orderCode, updateOrderDto)
+      // Update payment record in database
+      await this.paymentRepository.update(updatedPaymentData)
 
-      return { success: true, paymentData }
+      // If payment is PAID, update order status
+      if (paymentData.status === 'PAID') {
+        const updateOrderDto: UpdateOrderDto = { status: 2 } // Set order status to completed
+        await this.orderService.updateOrder(order_Id, updateOrderDto)
+      }
+
+      // Verify the update was successful
+      const verifiedPayment = await this.getOrderPaymentByOrderId(order_Id)
+      console.log('Updated Payment Record:', verifiedPayment)
+
+      return {
+        success: true,
+        paymentStatus: paymentData.status,
+        paymentDetails: {
+          orderCode: paymentData.orderCode,
+          amount: paymentData.amount,
+          amountPaid: paymentData.amountPaid,
+          status: paymentData.status,
+          createdAt: paymentData.createdAt
+        }
+      }
     } catch (error) {
-      console.error('Webhook verification failed:', error)
-      throw new Error('Webhook verification failed')
+      console.error('Payment verification failed:', error)
+      throw new Error('Payment verification failed')
     }
   }
 
