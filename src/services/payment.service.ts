@@ -93,24 +93,46 @@ export class PaymentService {
         throw new Error('Invalid payment data')
       }
 
-      console.log('Payment Data:', paymentData)
+      console.log('PayOS Status Response:', paymentData)
 
-      if (paymentData.status !== 'PAID') {
-        console.warn(`Payment status is ${paymentData.status}, not updating order`)
-        return { success: false, message: 'Payment not completed' }
+      // Create updated payment data from PayOS response
+      const updatedPaymentData = {
+        order_Id: order_Id,
+        orderCode: paymentData.orderCode,
+        amount: paymentData.amount,
+        amountPaid: paymentData.amountPaid,
+        amountRemaining: paymentData.amountRemaining,
+        status: paymentData.status,
+        createdAt: paymentData.createdAt,
+        transactions: paymentData.transactions || [],
+        cancellationReason: paymentData.cancellationReason,
+        canceledAt: paymentData.canceledAt
       }
 
-      const orderId = paymentData.transactions[0]?.description
-      const updateOrderDto: UpdateOrderDto = { status: 1 }
-      await this.orderService.updateOrder(orderId, updateOrderDto)
+      // Update payment record in database
+      await this.paymentRepository.update(updatedPaymentData)
 
-      paymentRecord.status = paymentData.status
-      paymentRecord.amountPaid = paymentData.amountPaid
-      paymentRecord.amountRemaining = paymentData.amountRemaining
-      paymentRecord.transactions = paymentData.transactions
-      await this.paymentRepository.update(paymentRecord)
+      // If payment is PAID, update order status
+      if (paymentData.status === 'PAID') {
+        const updateOrderDto: UpdateOrderDto = { status: 2 } // Set order status to completed
+        await this.orderService.updateOrder(order_Id, updateOrderDto)
+      }
 
-      return { success: true, paymentData }
+      // Verify the update was successful
+      const verifiedPayment = await this.getOrderPaymentByOrderId(order_Id)
+      console.log('Updated Payment Record:', verifiedPayment)
+
+      return {
+        success: true,
+        paymentStatus: paymentData.status,
+        paymentDetails: {
+          orderCode: paymentData.orderCode,
+          amount: paymentData.amount,
+          amountPaid: paymentData.amountPaid,
+          status: paymentData.status,
+          createdAt: paymentData.createdAt
+        }
+      }
     } catch (error) {
       console.error('Payment verification failed:', error)
       throw new Error('Payment verification failed')
