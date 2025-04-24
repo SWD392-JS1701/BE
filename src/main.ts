@@ -3,17 +3,17 @@ import { AppModule } from './modules/app.module'
 import * as dotenv from 'dotenv'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { ValidationPipe } from '@nestjs/common'
+dotenv.config()
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
-  dotenv.config()
+
   const config = new DocumentBuilder()
     .setTitle('LumièreSkin')
     .setDescription('SWD392 Final Project')
     .setVersion('1.0')
     .addBearerAuth()
     .build()
-
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup('api/docs', app, document)
 
